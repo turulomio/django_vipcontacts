@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.eric6project/
+django_vipcontacts.epj
+mysettings.py
