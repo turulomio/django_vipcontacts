@@ -20,14 +20,12 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def login(request):
-    print(request.POST.get("password"))
     try:
         user=User.objects.get(username=request.POST.get("username"))
     except User.DoesNotExist:
         return Response("Invalid user")
         
     password=request.POST.get("password")
-    print(password)
     pwd_valid=check_password(password, user.password)
     if not pwd_valid:
         return Response("Wrong password")
@@ -37,5 +35,4 @@ def login(request):
         token=Token.objects.get(user=user)
         token.delete()
     token=Token.objects.create(user=user)
-    print(token.key)
     return Response(token.key)
