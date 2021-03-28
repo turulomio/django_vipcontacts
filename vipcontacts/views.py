@@ -1,6 +1,6 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
-
+from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -16,6 +16,15 @@ class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all().order_by('name')
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
+    def get_queryset(self):
+        search=self.request.GET.get("search", "")
+        if search=="":
+            return self.queryset.none()
+        return self.queryset.filter(
+            Q(name__icontains=search) | 
+            Q(surname__icontains=search) | 
+            Q(surname2__icontains=search)
+        )
 
 
 @api_view(['POST'])
