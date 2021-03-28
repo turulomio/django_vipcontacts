@@ -20,6 +20,7 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def login(request):
+    print(request.POST.get("username"),  request.POST.get("password"))
     try:
         user=User.objects.get(username=request.POST.get("username"))
     except User.DoesNotExist:
@@ -36,3 +37,13 @@ def login(request):
         token.delete()
     token=Token.objects.create(user=user)
     return Response(token.key)
+    
+@api_view(['POST'])
+def logout(request):
+    print(request.POST.get("key"))
+    token=Token.objects.get(key=request.POST.get("key"))
+    if token is None:
+        return Response("Invalid token")
+    else:
+        token.delete()
+        return Response("Logged out")
