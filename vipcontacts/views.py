@@ -20,6 +20,8 @@ class PersonViewSet(viewsets.ModelViewSet):
         search=self.request.GET.get("search", "")
         if search=="":
             return self.queryset.none()
+        if search=="*":
+            return self.queryset
         return self.queryset.filter(
             Q(name__icontains=search) | 
             Q(surname__icontains=search) | 
