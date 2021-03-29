@@ -2,8 +2,8 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 class PersonGender(models.IntegerChoices):
-    NO = 0, _('Male')
-    YES = 1, _('Female')
+    Man = 0, _('Man')
+    Woman = 1, _('Woman')
 
 # Create your models here.
 class Person(models.Model):
