@@ -4,8 +4,9 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import viewsets,  permissions
+from rest_framework import status, viewsets,  permissions
 
+from django.http import Http404
 from vipcontacts.models import Person
 from vipcontacts.serializers import PersonSerializer
 
@@ -19,15 +20,22 @@ class PersonViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         search=self.request.GET.get("search", "")
         if search=="":
-            return self.queryset.none()
+            return Person.objects.none()
         if search=="*":
-            return self.queryset
-        return self.queryset.filter(
+            return Person.objects.all()
+        return Person.objects.filter(
             Q(name__icontains=search) | 
             Q(surname__icontains=search) | 
             Q(surname2__icontains=search)
         )
 
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = Person.objects.get(pk=kwargs['pk'])
+            instance.delete()
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
 def login(request):
