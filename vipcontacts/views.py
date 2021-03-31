@@ -5,13 +5,24 @@ from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  permissions
-from vipcontacts.models import Person
-from vipcontacts.serializers import PersonSerializer
+from vipcontacts.models import Person, Alias, Address
+from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer
+
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+#    permission_classes = [permissions.IsAuthenticated]  # SI QUITO AUTENTICACION PUEDO NAVEGAR POR LA URL DE DJANGO_REST
+
+class AliasViewSet(viewsets.ModelViewSet):
+    queryset = Alias.objects.all()
+    serializer_class = AliasSerializer
+#    permission_classes = [permissions.IsAuthenticated]  # SI QUITO AUTENTICACION PUEDO NAVEGAR POR LA URL DE DJANGO_REST
+    
 
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
-    permission_classes = [permissions.IsAuthenticated]
+#    permission_classes = [permissions.IsAuthenticated]
     
     def list(self, request):
         if len(self.request.GET)==0:#No get paramters:

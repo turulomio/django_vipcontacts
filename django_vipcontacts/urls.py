@@ -5,6 +5,8 @@ from vipcontacts import views
 
 router = routers.DefaultRouter()
 router.register(r'api/persons', views.PersonViewSet)
+router.register(r'api/alias', views.AliasViewSet)
+router.register(r'api/address', views.AddressViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
