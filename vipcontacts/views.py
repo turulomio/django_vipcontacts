@@ -21,13 +21,14 @@ class PersonViewSet(viewsets.ModelViewSet):
         #Filtering by search
         if search=="":
             qs=Person.objects.none()
-        if search=="*":
+        elif search=="*":
             qs=Person.objects.all()
-        qs=Person.objects.filter(
-            Q(name__icontains=search) | 
-            Q(surname__icontains=search) | 
-            Q(surname2__icontains=search)
-        )
+        else:
+            qs=Person.objects.filter(
+                Q(name__icontains=search) | 
+                Q(surname__icontains=search) | 
+                Q(surname2__icontains=search)
+            )
         serializer = PersonSerializer(qs, many=True)
         return Response(serializer.data)
 
