@@ -4,38 +4,32 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import status, viewsets,  permissions
-
-from django.http import Http404
+from rest_framework import viewsets,  permissions
 from vipcontacts.models import Person
 from vipcontacts.serializers import PersonSerializer
 
 class PersonViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = Person.objects.all().order_by('name')
+    queryset = Person.objects.all()
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
-    def get_queryset(self):
+    
+    def list(self, request):
+        if len(self.request.GET)==0:#No get paramters:
+            return viewsets.ModelViewSet.list(self, request)
+
         search=self.request.GET.get("search", "")
+        #Filtering by search
         if search=="":
-            return Person.objects.none()
+            qs=Person.objects.none()
         if search=="*":
-            return Person.objects.all()
-        return Person.objects.filter(
+            qs=Person.objects.all()
+        qs=Person.objects.filter(
             Q(name__icontains=search) | 
             Q(surname__icontains=search) | 
             Q(surname2__icontains=search)
         )
-
-    def destroy(self, request, *args, **kwargs):
-        try:
-            instance = Person.objects.get(pk=kwargs['pk'])
-            instance.delete()
-        except Http404:
-            pass
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = PersonSerializer(qs, many=True)
+        return Response(serializer.data)
 
 @api_view(['POST'])
 def login(request):
@@ -49,8 +43,7 @@ def login(request):
     pwd_valid=check_password(password, user.password)
     if not pwd_valid:
         return Response("Wrong password")
-        
-        
+
     if Token.objects.filter(user=user).exists():#Lo borra
         token=Token.objects.get(user=user)
         token.delete()
