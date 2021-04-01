@@ -10,7 +10,7 @@ class AddressSerializer(serializers.HyperlinkedModelSerializer):
 class AliasSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Alias
-        fields = ('id', 'name',  'dt_update',  'dt_obsolete')
+        fields = ('id', 'name',  'dt_update',  'dt_obsolete', 'person')
         fields = '__all__'
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
