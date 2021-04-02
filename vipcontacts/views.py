@@ -6,8 +6,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
-from vipcontacts.models import Person, Alias, Address,  RelationShip
-from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer
+from vipcontacts.models import Person, Alias, Address,  RelationShip,  Log, Phone
+from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, LogSerializer, PhoneSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -21,6 +21,11 @@ class AliasViewSet(viewsets.ModelViewSet):
     serializer_class = AliasSerializer
     permission_classes = [permissions.IsAuthenticated] 
     
+class LogViewSet(viewsets.ModelViewSet):
+    queryset = Log.objects.all()
+    serializer_class = LogSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+    
 class RelationShipViewSet(viewsets.ModelViewSet):
     queryset = RelationShip.objects.all()
     serializer_class = RelationShipSerializer
@@ -29,6 +34,10 @@ class RelationShipViewSet(viewsets.ModelViewSet):
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
+    permission_classes = [permissions.IsAuthenticated]
+class PhoneViewSet(viewsets.ModelViewSet):
+    queryset = Phone.objects.all()
+    serializer_class = PhoneSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 @api_view(['POST'])
@@ -76,4 +85,15 @@ def person_search(request, search):
             Q(surname2__icontains=search)
         )
     serializer = PersonSerializer(qs, many=True, context={'request': request} )
+    return JsonResponse(serializer.data, safe=False)
+    
+    
+
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def get_relations(request, person_id):
+    print("Getting relations of",  person_id)
+    qs=RelationShip.objects.filter(person_id=person_id)
+    serializer = RelationShipSerializer(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)

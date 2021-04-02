@@ -15,10 +15,6 @@ class PersonGender(models.IntegerChoices):
     Woman = 1, _('Woman')
 
     
-class AddressType(models.IntegerChoices):
-    Home = 0, _('Home')
-    Work= 1, _('Work')
-    Holidays= 2, _('Vacances')
 
 # Create your models here.
 class Person(models.Model):
@@ -35,7 +31,19 @@ class Person(models.Model):
         
     def __str__(self):
         return f"{str(self.name)} {str(self.surname)} {str(self.surname2)}"
+class LogType(models.IntegerChoices):
+    ContactValueChanged= 0, _('Contact value changed')
+    ContactValueAdded = 1, _('Contact value added')
+    Personal=2, _("Personal")
 
+class Log(models.Model):
+    person = models.ForeignKey('Person', related_name="logs", on_delete= models.CASCADE, blank=False, null=False)
+    datetime=models.DateTimeField(blank=False, null=False, default=timezone.now)
+    retypes=models.IntegerField(choices=LogType.choices, blank=False,  null=False)
+    text=models.TextField(blank=False, null=True)
+    class Meta:
+        managed = True
+        db_table = 'logs'
 class Alias(models.Model):
     person = models.ForeignKey('Person', related_name="alias",  on_delete=models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
@@ -62,19 +70,24 @@ class PersonRelationType(models.IntegerChoices):
 class RelationShip(models.Model):
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
-    person = models.ForeignKey('Person', on_delete=models.CASCADE, blank=False, null=False,  related_name="person")
-    type=models.IntegerField(choices=PersonRelationType.choices, blank=False,  null=False)
-    destiny =  models.ForeignKey('Person', on_delete=models.DO_NOTHING, blank=False, null=False,  related_name="+")#Person', related_name="personrelation",  on_delete= models.CASCADE, blank=False, null=False)
+    person = models.ForeignKey('Person', related_name="origin", on_delete=models.CASCADE, blank=False, null=False,)
+    retypes=models.IntegerField(choices=PersonRelationType.choices, blank=False,  null=False)
+    destiny =  models.ForeignKey('Person', related_name="+", on_delete=models.DO_NOTHING, blank=False, null=False)
     class Meta:
         managed = True
         db_table = 'relationship'
 
+
+class AddressType(models.IntegerChoices):
+    Home = 0, _('Home')
+    Work= 1, _('Work')
+    Holidays= 2, _('Vacances')
     
 class Address(models.Model):
     person = models.ForeignKey('Person',related_name="address",  on_delete= models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
-    type=models.IntegerField(choices=AddressType.choices, blank=False,  null=False)
+    retypes=models.IntegerField(choices=AddressType.choices, blank=False,  null=False)
     address=models.CharField(max_length=300, blank=False, null=False)
     code=models.CharField(max_length=10, blank=False, null=True)
     city=models.CharField(max_length=100, blank=False, null=False)
@@ -84,18 +97,18 @@ class Address(models.Model):
         db_table = 'adresses'
 
 
-class LogType(models.IntegerChoices):
-    ContactValueChanged= 0, _('Contact value changed')
-    ContactValueAdded = 1, _('Contact value added')
-    Personal=2, _("Personal")
+class PhoneType(models.IntegerChoices):
+    Home = 0, _('Home')
+    Work= 1, _('Work')
+    Other= 2, _('Other')
     
-
-
-class Log(models.Model):
-    person = models.ForeignKey('Person', models.CASCADE, blank=False, null=False)
+class Phone(models.Model):
+    person = models.ForeignKey('Person',related_name="phone",  on_delete= models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
-    type=models.IntegerField(choices=LogType.choices, blank=False,  null=False)
-    text=models.TextField(blank=False, null=True)
+    dt_obsolete=models.DateTimeField(blank=False, null=True)
+    retypes=models.IntegerField(choices=PhoneType.choices, blank=False,  null=False)
+    phone=models.CharField(max_length=10, blank=False, null=True) 
     class Meta:
         managed = True
-        db_table = 'logs'
+        db_table = 'phones'
+

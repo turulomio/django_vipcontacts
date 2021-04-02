@@ -8,6 +8,8 @@ router.register(r'api/persons', views.PersonViewSet)
 router.register(r'api/alias', views.AliasViewSet)
 router.register(r'api/address', views.AddressViewSet)
 router.register(r'api/relationship', views.RelationShipViewSet)
+router.register(r'api/phone', views.PhoneViewSet)
+router.register(r'api/log', views.LogViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -15,7 +17,6 @@ urlpatterns = [
     path('login/', views.login), 
     path('logout/', views.logout), 
     path('api/persons/search/<slug:search>/', views.person_search),
-#    path('api/persons/<int:pk>', views.PersonViewSet.as_view({'get':'retrieve'})),
-    
+    path('api/persons/relations/<int:person_id>/', views.get_relations),    
 ]
 
