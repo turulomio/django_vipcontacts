@@ -4,33 +4,33 @@ from rest_framework import serializers
 class AddressSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Address
-        fields = ('id', 'retypes',  'address', 'city',  'code',  'country',   'dt_update',  'dt_obsolete', 'person')
+        fields = ('url', 'retypes',  'address', 'city',  'code',  'country',   'dt_update',  'dt_obsolete', 'person')
 
 class AliasSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Alias
-        fields = ('id', 'name',  'dt_update',  'dt_obsolete', 'person')
+        fields = ('id','url', 'name',  'dt_update',  'dt_obsolete', 'person')
         
 class MailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Mail
-        fields = ('id', 'mail',  'dt_update',  'dt_obsolete', 'retypes','person')
+        fields = ('mail',  'dt_update',  'dt_obsolete', 'retypes','person', 'url')
 
 class PhoneSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Phone
-        fields = ('id', 'phone',  'dt_update',  'dt_obsolete', 'retypes','person')
+        fields = ('url', 'phone',  'dt_update',  'dt_obsolete', 'retypes','person')
 
 class LogSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Log
-        fields = ('id', 'datetime','retypes',  'text',   'person')
+        fields = ('url', 'datetime','retypes',  'text',   'person')
 
 
 class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RelationShip
-        fields = ('id',  'dt_update',  'dt_obsolete','retypes', 'destiny',  'person',)
+        fields = ('url',  'dt_update',  'dt_obsolete','retypes', 'destiny',  'person',)
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
@@ -42,5 +42,5 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Person
-        fields = ('id', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
+        fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
         'logs', 'alias', 'address', 'relationship', 'phone', 'mail')

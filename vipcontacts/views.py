@@ -35,10 +35,12 @@ class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 class PhoneViewSet(viewsets.ModelViewSet):
     queryset = Phone.objects.all()
     serializer_class = PhoneSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 class MailViewSet(viewsets.ModelViewSet):
     queryset = Mail.objects.all()
     serializer_class = MailSerializer
