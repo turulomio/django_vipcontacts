@@ -100,10 +100,12 @@ class Address(models.Model):
 class PhoneType(models.IntegerChoices):
     Home = 0, _('Home')
     Work= 1, _('Work')
-    Other= 2, _('Other')
+    PersonalMobile= 3, _('Home mobile')
+    WorkMobile= 4, _('Personal mobile')
+    Others= 5, _('Others')
     
 class Phone(models.Model):
-    person = models.ForeignKey('Person',related_name="phone",  on_delete= models.CASCADE, blank=False, null=False)
+    person = models.ForeignKey('Person', related_name="phone",  on_delete= models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     retypes=models.IntegerField(choices=PhoneType.choices, blank=False,  null=False)
@@ -114,15 +116,15 @@ class Phone(models.Model):
         
         
 class MailType(models.IntegerChoices):
-    Home = 0, _('Home')
+    Home = 0, _('Personal')
     Work= 1, _('Work')
     Other= 2, _('Other')
     
 class Mail(models.Model):
-    person = models.ForeignKey('Person',related_name="mail",  on_delete= models.CASCADE, blank=False, null=False)
+    person = models.ForeignKey('Person', related_name="mail",  on_delete= models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
-    retypes=models.IntegerField(choices=PhoneType.choices, blank=False,  null=False)
+    retypes=models.IntegerField(choices=MailType.choices, blank=False,  null=False)
     mail=models.CharField(max_length=100, blank=False, null=True) 
     class Meta:
         managed = True

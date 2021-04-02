@@ -10,15 +10,16 @@ class AliasSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Alias
         fields = ('id', 'name',  'dt_update',  'dt_obsolete', 'person')
+        
 class MailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Mail
         fields = ('id', 'mail',  'dt_update',  'dt_obsolete', 'retypes','person')
+
 class PhoneSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Phone
         fields = ('id', 'phone',  'dt_update',  'dt_obsolete', 'retypes','person')
-
 
 class LogSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -31,12 +32,12 @@ class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
         model = RelationShip
         fields = ('id',  'dt_update',  'dt_obsolete','retypes', 'destiny',  'person',)
 
-class PersonSerializer(serializers.ModelSerializer):
+class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
     logs=LogSerializer(many=True, read_only=True)
     alias = AliasSerializer(many=True, read_only=True)
     address = AddressSerializer(many=True,  read_only=True)
-    mail = PhoneSerializer(many=True,  read_only=True)
+    mail = MailSerializer(many=True,  read_only=True)
     phone = PhoneSerializer(many=True,  read_only=True)
     
     class Meta:
