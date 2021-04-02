@@ -9,6 +9,7 @@ router.register(r'api/alias', views.AliasViewSet)
 router.register(r'api/address', views.AddressViewSet)
 router.register(r'api/relationship', views.RelationShipViewSet)
 router.register(r'api/phone', views.PhoneViewSet)
+router.register(r'api/mail', views.MailViewSet)
 router.register(r'api/log', views.LogViewSet)
 
 urlpatterns = [

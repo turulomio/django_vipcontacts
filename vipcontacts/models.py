@@ -107,8 +107,24 @@ class Phone(models.Model):
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     retypes=models.IntegerField(choices=PhoneType.choices, blank=False,  null=False)
-    phone=models.CharField(max_length=10, blank=False, null=True) 
+    phone=models.CharField(max_length=20, blank=False, null=True) 
     class Meta:
         managed = True
         db_table = 'phones'
+        
+        
+class MailType(models.IntegerChoices):
+    Home = 0, _('Home')
+    Work= 1, _('Work')
+    Other= 2, _('Other')
+    
+class Mail(models.Model):
+    person = models.ForeignKey('Person',related_name="mail",  on_delete= models.CASCADE, blank=False, null=False)
+    dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
+    dt_obsolete=models.DateTimeField(blank=False, null=True)
+    retypes=models.IntegerField(choices=PhoneType.choices, blank=False,  null=False)
+    mail=models.CharField(max_length=100, blank=False, null=True) 
+    class Meta:
+        managed = True
+        db_table = 'mails'
 
