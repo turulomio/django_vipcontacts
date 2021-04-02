@@ -57,18 +57,19 @@ class PersonRelationType(models.IntegerChoices):
     Grandson= 8, _('Grandson')
     Granddaughter= 9, _('Granddaughter')
 
-class PersonRelation(models.Model):
+## person type destiny
+## M Husband N
+class RelationShip(models.Model):
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
-    person = models.ForeignKey('Person', related_name="personrelation",  on_delete= models.CASCADE, blank=False, null=False)
+    person = models.ForeignKey('Person', on_delete=models.CASCADE, blank=False, null=False,  related_name="person")
     type=models.IntegerField(choices=PersonRelationType.choices, blank=False,  null=False)
-    relationated=models.ForeignKey('Person', models.DO_NOTHING, blank=False, null=False, related_name="relationated")
+    destiny =  models.ForeignKey('Person', on_delete=models.DO_NOTHING, blank=False, null=False,  related_name="+")#Person', related_name="personrelation",  on_delete= models.CASCADE, blank=False, null=False)
     class Meta:
         managed = True
-        db_table = 'personsrelations'
+        db_table = 'relationship'
 
-
-
+    
 class Address(models.Model):
     person = models.ForeignKey('Person',related_name="address",  on_delete= models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
@@ -77,7 +78,7 @@ class Address(models.Model):
     address=models.CharField(max_length=300, blank=False, null=False)
     code=models.CharField(max_length=10, blank=False, null=True)
     city=models.CharField(max_length=100, blank=False, null=False)
-    countrys=models.CharField(max_length=2, choices=LIST_COUNTRIES,  blank=False, null=False)    
+    country=models.CharField(max_length=2, choices=LIST_COUNTRIES,  blank=False, null=False)    
     class Meta:
         managed = True
         db_table = 'adresses'

@@ -6,23 +6,26 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
-from vipcontacts.models import Person, Alias, Address
-from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer
-
+from vipcontacts.models import Person, Alias, Address,  RelationShip
+from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
-    permission_classes = [permissions.IsAuthenticated]  # SI QUITO AUTENTICACION PUEDO NAVEGAR POR LA URL DE DJANGO_REST
+    permission_classes = [permissions.IsAuthenticated]  
 
 class AliasViewSet(viewsets.ModelViewSet):
     queryset = Alias.objects.all()
     serializer_class = AliasSerializer
-    permission_classes = [permissions.IsAuthenticated]  # SI QUITO AUTENTICACION PUEDO NAVEGAR POR LA URL DE DJANGO_REST
+    permission_classes = [permissions.IsAuthenticated] 
     
-
+class RelationShipViewSet(viewsets.ModelViewSet):
+    queryset = RelationShip.objects.all()
+    serializer_class = RelationShipSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
     serializer_class = PersonSerializer

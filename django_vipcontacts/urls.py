@@ -7,6 +7,7 @@ router = routers.DefaultRouter()
 router.register(r'api/persons', views.PersonViewSet)
 router.register(r'api/alias', views.AliasViewSet)
 router.register(r'api/address', views.AddressViewSet)
+router.register(r'api/relationship', views.RelationShipViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

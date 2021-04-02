@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['192.168.1.100']
 
 REST_FRAMEWORK={ 
     'DEFAULT_AUTHENTICATION_CLASSES':[
-        #'rest_framework.authentication.BasicAuthentication',  ## Uncomment to use api in url 
+        'rest_framework.authentication.BasicAuthentication',  ## Uncomment to use api in url 
         'rest_framework.authentication.TokenAuthentication', 
     ]
 }
