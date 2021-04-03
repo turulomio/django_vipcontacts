@@ -30,7 +30,7 @@ class LogSerializer(serializers.HyperlinkedModelSerializer):
 class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RelationShip
-        fields = ('url',  'dt_update',  'dt_obsolete','retypes', 'destiny',  'person',)
+        fields = ('url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny')
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
@@ -44,3 +44,10 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
         model = Person
         fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
         'log', 'alias', 'address', 'relationship', 'phone', 'mail')
+        
+        
+class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):
+    
+    class Meta:
+        model = Person
+        fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender')

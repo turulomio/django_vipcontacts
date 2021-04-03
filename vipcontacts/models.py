@@ -30,11 +30,24 @@ class Person(models.Model):
         db_table = 'persons'
         
     def __str__(self):
-        return f"{str(self.name)} {str(self.surname)} {str(self.surname2)}"
+        return f"Person: {str(self.name)} {str(self.surname)} {str(self.surname2)} ({str(self.birth)}) #{str(self.id)}"
+        
+    
+    def search_string(self):
+        qs=Person.objects.all().filter(id=3)
+        from vipcontacts.serializers import PersonSerializer
+        from django.http import JsonResponse
+        serializer = PersonSerializer(qs, many=True,context={'request': None} )
+        json=JsonResponse(serializer.data, safe=False)
+        print(str(json))
+        
+
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact value changed')
     ContactValueAdded = 1, _('Contact value added')
-    Personal=2, _("Personal")
+    
+    #Automatic are <100
+    Personal=100, _("Personal")
 
 class Log(models.Model):
     person = models.ForeignKey('Person', related_name="log", on_delete= models.CASCADE, blank=False, null=False)
@@ -117,7 +130,7 @@ class Phone(models.Model):
         
         
 class MailType(models.IntegerChoices):
-    Home = 0, _('Personal')
+    Personal = 0, _('Personal')
     Work= 1, _('Work')
     Other= 2, _('Other')
     
@@ -130,4 +143,7 @@ class Mail(models.Model):
     class Meta:
         managed = True
         db_table = 'mails'
+        
+    def __str__(self):
+        return f"Mail: {self.mail} of type {self.retypes}"
 

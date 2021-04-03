@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
 from vipcontacts.models import Person, Alias, Address,  RelationShip,  Log, Phone, Mail
-from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, LogSerializer, PhoneSerializer, MailSerializer
+from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -90,6 +90,6 @@ def person_search(request, search):
             Q(surname__icontains=search) | 
             Q(surname2__icontains=search)
         )
-    serializer = PersonSerializer(qs, many=True, context={'request': request} )
+    serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
 
