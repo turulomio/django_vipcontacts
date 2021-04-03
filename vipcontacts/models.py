@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 from pycountry import countries
 
 #Create countries class
@@ -44,6 +44,7 @@ class Log(models.Model):
     class Meta:
         managed = True
         db_table = 'logs'
+
 class Alias(models.Model):
     person = models.ForeignKey('Person', related_name="alias",  on_delete=models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
@@ -98,10 +99,10 @@ class Address(models.Model):
 
 
 class PhoneType(models.IntegerChoices):
-    Home = 0, _('Home')
+    Home = 0, _('Home')     
     Work= 1, _('Work')
-    PersonalMobile= 3, _('Home mobile')
-    WorkMobile= 4, _('Personal mobile')
+    PersonalMobile= 3, _('Personal mobile')
+    WorkMobile= 4, _('Work mobile')
     Others= 5, _('Others')
     
 class Phone(models.Model):

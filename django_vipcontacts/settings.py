@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware', #Must be here
     'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,6 +82,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'django_vipcontacts.wsgi.application'
 
@@ -123,7 +125,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
+#LANGUAGE_CODE = 'es-es'
+## Locale paths in source distribution
+LOCALE_PATHS = (
+    f'{BASE_DIR}/vipcontacts/locale/',
+)
+LANGUAGES = [
+    ('es', 'Spanish'),
+    ('en', 'English'),
+]
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
