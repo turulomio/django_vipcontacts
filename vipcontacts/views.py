@@ -92,14 +92,4 @@ def person_search(request, search):
         )
     serializer = PersonSerializer(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
-    
-    
 
-@csrf_exempt
-@api_view(['GET', ])
-@permission_classes([permissions.IsAuthenticated, ])
-def get_relations(request, person_id):
-    print("Getting relations of",  person_id)
-    qs=RelationShip.objects.filter(person_id=person_id)
-    serializer = RelationShipSerializer(qs, many=True, context={'request': request} )
-    return JsonResponse(serializer.data, safe=False)

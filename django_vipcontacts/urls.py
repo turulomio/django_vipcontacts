@@ -18,6 +18,5 @@ urlpatterns = [
     path('login/', views.login), 
     path('logout/', views.logout), 
     path('api/persons/search/<slug:search>/', views.person_search),
-    path('api/persons/relations/<int:person_id>/', views.get_relations),    
 ]
 

@@ -37,7 +37,7 @@ class LogType(models.IntegerChoices):
     Personal=2, _("Personal")
 
 class Log(models.Model):
-    person = models.ForeignKey('Person', related_name="logs", on_delete= models.CASCADE, blank=False, null=False)
+    person = models.ForeignKey('Person', related_name="log", on_delete= models.CASCADE, blank=False, null=False)
     datetime=models.DateTimeField(blank=False, null=False, default=timezone.now)
     retypes=models.IntegerField(choices=LogType.choices, blank=False,  null=False)
     text=models.TextField(blank=False, null=True)
@@ -71,7 +71,7 @@ class PersonRelationType(models.IntegerChoices):
 class RelationShip(models.Model):
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
-    person = models.ForeignKey('Person', related_name="origin", on_delete=models.CASCADE, blank=False, null=False,)
+    person = models.ForeignKey('Person', related_name="relationship", on_delete=models.CASCADE, blank=False, null=False,)
     retypes=models.IntegerField(choices=PersonRelationType.choices, blank=False,  null=False)
     destiny =  models.ForeignKey('Person', related_name="+", on_delete=models.DO_NOTHING, blank=False, null=False)
     class Meta:

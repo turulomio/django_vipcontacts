@@ -34,7 +34,7 @@ class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
-    logs=LogSerializer(many=True, read_only=True)
+    log=LogSerializer(many=True, read_only=True)
     alias = AliasSerializer(many=True, read_only=True)
     address = AddressSerializer(many=True,  read_only=True)
     mail = MailSerializer(many=True,  read_only=True)
@@ -43,4 +43,4 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
         fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
-        'logs', 'alias', 'address', 'relationship', 'phone', 'mail')
+        'log', 'alias', 'address', 'relationship', 'phone', 'mail')
