@@ -32,15 +32,36 @@ class Person(models.Model):
     def __str__(self):
         return f"Person: {str(self.name)} {str(self.surname)} {str(self.surname2)} ({str(self.birth)}) #{str(self.id)}"
         
-    
-    def search_string(self):
-        qs=Person.objects.all().filter(id=3)
-        from vipcontacts.serializers import PersonSerializer
-        from django.http import JsonResponse
-        serializer = PersonSerializer(qs, many=True,context={'request': None} )
-        json=JsonResponse(serializer.data, safe=False)
-        print(str(json))
-        
+
+## Generate a search string
+def person_search_string( id,  request=None):
+    def add(s):
+        if s==None:
+            return ""
+        else:
+            return " " + s
+    ######
+    p=Person.objects.get(id=id)
+    from vipcontacts.serializers import PersonSerializer
+    serializer = PersonSerializer(p, many=False,context={'request': request} )
+    x=serializer.data
+    s=x["name"]
+    s=s+add(x["surname"])
+    s=s+add(x["surname2"])
+    s=s+add(x["birth"])
+    s=s+add(x["death"])
+    for o in x["mail"]:
+        s=s+add(o["mail"])
+    for o in x["phone"]:
+        s=s+add(o["phone"])
+    for o in x["address"]:
+        s=s+add(o["address"])
+        s=s+add(o["city"])
+    for o in x["log"]:
+        s=s+add(o["text"])
+    for o in x["alias"]:
+        s=s+add(o["name"])
+    return s
 
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact value changed')
@@ -108,7 +129,7 @@ class Address(models.Model):
     country=models.CharField(max_length=2, choices=LIST_COUNTRIES,  blank=False, null=False)    
     class Meta:
         managed = True
-        db_table = 'adresses'
+        db_table = 'addresses'
 
 
 class PhoneType(models.IntegerChoices):
@@ -147,3 +168,12 @@ class Mail(models.Model):
     def __str__(self):
         return f"Mail: {self.mail} of type {self.retypes}"
 
+class Search(models.Model):
+    person = models.OneToOneField(Person, on_delete=models.CASCADE, primary_key=True)
+    string = models.TextField(blank=True, null=False, default="")
+    class Meta:
+        managed = True
+        db_table = 'searchs'
+        
+    def __str__(self):
+        return f"Searchs: {self.string}"
