@@ -90,11 +90,10 @@ def person_find(request):
     elif search=="__all__":
         qs=Person.objects.all()
     else:
-        qs=Person.objects.filter(
-            Q(name__icontains=search) | 
-            Q(surname__icontains=search) | 
-            Q(surname2__icontains=search)
-        )
+        qs_search=Search.objects.all().filter(string__icontains=search)
+        person_ids=[s.person.id for s in qs_search]
+        qs=Person.objects.all().filter(id__in=person_ids).distinct()
+
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
 
