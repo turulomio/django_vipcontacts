@@ -25,7 +25,7 @@ SECRET_KEY = '(d!b4ns-rs_f(%-ps9q*ci1wo3lbqo56-h^%5k1+=a1-%5_$(2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.100', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 REST_FRAMEWORK={ 
@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = "https://localhost", "http://192.168.1.100:8080", 
+CORS_ORIGIN_WHITELIST = "https://localhost", "http://localhost:8002", 
 
 ROOT_URLCONF = 'django_vipcontacts.urls'
 
@@ -148,8 +148,3 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-if Path("mysettings.py").exists()==False:
-    print("You can create 'mysettings.py' file (in root directory) file to override this settings with the same syntax")
-else:
-    from mysettings import *    
-    print("Your personal settings have been added in mysettings.py")
