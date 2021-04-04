@@ -133,7 +133,23 @@ class Address(models.Model):
     class Meta:
         managed = True
         db_table = 'addresses'
+        
 
+    def create_log( self):
+        r=[]
+        for field in ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country']:
+            r.append((field,  getattr(self, field)))
+        s=f"{self.__class__.__name__}, {r}"
+        l=Log(datetime=self.dt_update, person=self.person, retypes=LogType.ContactValueAdded, text=s)
+        l.save()    
+        
+    def update_log( self, old, new):
+        r=[]
+        for field in ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country']:
+            r.append((field,  getattr(old, field), getattr(new, field)))
+        s=f"{self.__class__.__name__}, {r}"
+        l=Log(datetime=self.dt_update, person=self.person, retypes=LogType.ContactValueChanged, text=s)
+        l.save()
 
 class PhoneType(models.IntegerChoices):
     Home = 0, _('Home')     

@@ -9,11 +9,13 @@ class AddressSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
+        created.create_log()
         return created
     
     def update(self, instance, validated_data):
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
+        updated.update_log(instance, updated)
         return updated
 
 class AliasSerializer(serializers.HyperlinkedModelSerializer):
