@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = "https://localhost", "http://localhost:8002", 
+CORS_ORIGIN_WHITELIST = "https://localhost", "http://localhost:8003", 
 
 ROOT_URLCONF = 'django_vipcontacts.urls'
 
