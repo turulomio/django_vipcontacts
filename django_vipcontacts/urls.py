@@ -17,6 +17,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('login/', views.login), 
     path('logout/', views.logout), 
-    path('api/persons/search/<slug:search>/', views.person_search),
+    path('api/search/', views.person_search),
 ]
 

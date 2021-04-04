@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
-from vipcontacts.models import Person, Alias, Address,  RelationShip,  Log, Phone, Mail, person_search_string
+from vipcontacts.models import Person, Alias, Address,  RelationShip,  Log, Phone, Mail
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -78,8 +78,8 @@ def logout(request):
 @csrf_exempt
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
-def person_search(request, search):
-    print("Searching",  search)
+def person_search(request):
+    search=request.GET.get("search", "__none__")
     if search=="__none__":
         qs=Person.objects.none()
     elif search=="__all__":
@@ -90,8 +90,6 @@ def person_search(request, search):
             Q(surname__icontains=search) | 
             Q(surname2__icontains=search)
         )
-    print(person_search_string(3, None))
-        
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
 

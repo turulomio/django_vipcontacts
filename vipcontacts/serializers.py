@@ -47,7 +47,6 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
         
         
 class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):
-    
     class Meta:
         model = Person
-        fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender')
+        fields = ('id','url', 'name', 'surname', 'surname2',  'birth')
