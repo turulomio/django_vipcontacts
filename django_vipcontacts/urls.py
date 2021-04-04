@@ -11,12 +11,13 @@ router.register(r'api/relationship', views.RelationShipViewSet)
 router.register(r'api/phone', views.PhoneViewSet)
 router.register(r'api/mail', views.MailViewSet)
 router.register(r'api/log', views.LogViewSet)
+router.register(r'api/search', views.SearchViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('login/', views.login), 
     path('logout/', views.logout), 
-    path('api/search/', views.person_search),
+    path('api/find/', views.person_find),
 ]
 

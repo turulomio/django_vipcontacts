@@ -1,4 +1,4 @@
-from vipcontacts.models import Alias, Person, Address, RelationShip, Log, Phone, Mail
+from vipcontacts.models import Alias, Person, Address, RelationShip, Log, Phone, Mail, Search
 from rest_framework import serializers
 
 class AddressSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,6 +32,11 @@ class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
         model = RelationShip
         fields = ('url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny')
 
+class SearchSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Search
+        fields = ('url',  'string',  'person')
+
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
     log=LogSerializer(many=True, read_only=True)
@@ -39,11 +44,12 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     address = AddressSerializer(many=True,  read_only=True)
     mail = MailSerializer(many=True,  read_only=True)
     phone = PhoneSerializer(many=True,  read_only=True)
+    search = SearchSerializer(many=True,  read_only=True)
     
     class Meta:
         model = Person
         fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
-        'log', 'alias', 'address', 'relationship', 'phone', 'mail')
+        'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search')
         
         
 class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):

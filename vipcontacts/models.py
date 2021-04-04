@@ -169,8 +169,8 @@ class Mail(models.Model):
         return f"Mail: {self.mail} of type {self.retypes}"
 
 class Search(models.Model):
-    person = models.OneToOneField(Person, on_delete=models.CASCADE, primary_key=True)
-    string = models.TextField(blank=True, null=False, default="")
+    person = models.ForeignKey('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)
+    string = models.TextField(blank=True, null=False)
     class Meta:
         managed = True
         db_table = 'searchs'
