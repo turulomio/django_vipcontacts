@@ -31,37 +31,40 @@ class Person(models.Model):
         
     def __str__(self):
         return f"Person: {str(self.name)} {str(self.surname)} {str(self.surname2)} ({str(self.birth)}) #{str(self.id)}"
-        
 
-## Generate a search string
-def person_search_string( id,  request=None):
-    def add(s):
-        if s==None:
-            return ""
-        else:
-            return " " + s
-    ######
-    p=Person.objects.get(id=id)
-    from vipcontacts.serializers import PersonSerializer
-    serializer = PersonSerializer(p, many=False,context={'request': request} )
-    x=serializer.data
-    s=x["name"]
-    s=s+add(x["surname"])
-    s=s+add(x["surname2"])
-    s=s+add(x["birth"])
-    s=s+add(x["death"])
-    for o in x["mail"]:
-        s=s+add(o["mail"])
-    for o in x["phone"]:
-        s=s+add(o["phone"])
-    for o in x["address"]:
-        s=s+add(o["address"])
-        s=s+add(o["city"])
-    for o in x["log"]:
-        s=s+add(o["text"])
-    for o in x["alias"]:
-        s=s+add(o["name"])
-    return s
+    ## Generate a search string
+    def update_search_string( self, request=None):
+        def add(s):
+            if s==None:
+                return ""
+            else:
+                return " " + s
+        ######
+        if self.id is None:
+            print("You must save person before update_search_string")
+            return 
+        from vipcontacts.serializers import PersonSerializer
+        serializer = PersonSerializer(self, many=False,context={'request': request} )
+        x=serializer.data
+        s=x["name"]
+        s=s+add(x["surname"])
+        s=s+add(x["surname2"])
+        s=s+add(x["birth"])
+        s=s+add(x["death"])
+        for o in x["mail"]:
+            s=s+add(o["mail"])
+        for o in x["phone"]:
+            s=s+add(o["phone"])
+        for o in x["address"]:
+            s=s+add(o["address"])
+            s=s+add(o["city"])
+        for o in x["log"]:
+            s=s+add(o["text"])
+        for o in x["alias"]:
+            s=s+add(o["name"])
+        Search.objects.filter(person=self).delete()
+        search=Search( person=self, string=s)
+        search.save()
 
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact value changed')
@@ -177,3 +180,35 @@ class Search(models.Model):
         
     def __str__(self):
         return f"Searchs: {self.string}"
+        
+#    ## Generate a search string
+#    def person_search_string(self, request=None):
+#        def add(s):
+#            if s==None:
+#                return ""
+#            else:
+#                return " " + s
+#        ######
+#        if self.person is None:
+#            print ("person_search_string set person first")
+#            return ""
+#        from vipcontacts.serializers import PersonSerializer
+#        serializer = PersonSerializer(self.person, many=False,context={'request': request} )
+#        x=serializer.data
+#        s=x["name"]
+#        s=s+add(x["surname"])
+#        s=s+add(x["surname2"])
+#        s=s+add(x["birth"])
+#        s=s+add(x["death"])
+#        for o in x["mail"]:
+#            s=s+add(o["mail"])
+#        for o in x["phone"]:
+#            s=s+add(o["phone"])
+#        for o in x["address"]:
+#            s=s+add(o["address"])
+#            s=s+add(o["city"])
+#        for o in x["log"]:
+#            s=s+add(o["text"])
+#        for o in x["alias"]:
+#            s=s+add(o["name"])
+#        return s

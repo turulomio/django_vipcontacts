@@ -46,6 +46,16 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     phone = PhoneSerializer(many=True,  read_only=True)
     search = SearchSerializer(many=True,  read_only=True)
     
+    def create(self, validated_data):
+        p=Person.objects.create(**validated_data)
+        p.update_search_string()
+        return p
+    
+    def update(self, instance, validated_data):
+        updated_person=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
+        updated_person.update_search_string()
+        return updated_person
+    
     class Meta:
         model = Person
         fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
@@ -56,3 +66,7 @@ class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
         fields = ('id','url', 'name', 'surname', 'surname2',  'birth')
+        
+        
+        
+
