@@ -130,3 +130,5 @@ dmypy.json
 .eric6project/
 django_vipcontacts.epj
 mysettings.py
+## For preproduction
+django_vipcontacts/presettings.py
