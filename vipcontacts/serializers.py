@@ -9,26 +9,30 @@ class AddressSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
-        created.create_log()
+        created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
-        updated.update_log(instance, updated)
         return updated
 
 class AliasSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Alias
         fields = ('id','url', 'name',  'dt_update',  'dt_obsolete', 'person')
-            
+    
+
+    
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
+        created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
@@ -37,12 +41,16 @@ class MailSerializer(serializers.HyperlinkedModelSerializer):
         model = Mail
         fields = ('mail',  'dt_update',  'dt_obsolete', 'retypes','person', 'url')
     
+
+    
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
+        created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
@@ -51,12 +59,16 @@ class PhoneSerializer(serializers.HyperlinkedModelSerializer):
         model = Phone
         fields = ('url', 'phone',  'dt_update',  'dt_obsolete', 'retypes','person')
     
+
+    
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
+        created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
@@ -64,13 +76,16 @@ class LogSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Log
         fields = ('url', 'datetime','retypes',  'text',   'person')
+
     
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
+        created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
@@ -80,12 +95,16 @@ class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
         model = RelationShip
         fields = ('url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny')
     
+
+    
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
+        created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
@@ -94,12 +113,16 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
         model = Search
         fields = ('url',  'string',  'person')
     
+
+    
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
+        created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
@@ -111,16 +134,19 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     mail = MailSerializer(many=True,  read_only=True)
     phone = PhoneSerializer(many=True,  read_only=True)
     search = SearchSerializer(many=True,  read_only=True)
+
     
     def create(self, validated_data):
-        created_person=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
-        created_person.update_search_string()
-        return created_person
+        created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
+        created.person.update_search_string()
+        created.create_log(created)
+        return created
     
     def update(self, instance, validated_data):
-        updated_person=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
-        updated_person.update_search_string()
-        return updated_person
+        instance.update_log(instance, validated_data)
+        updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
+        updated.person.update_search_string()
+        return updated
     
     class Meta:
         model = Person

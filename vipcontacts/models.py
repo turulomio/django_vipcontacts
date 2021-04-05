@@ -31,6 +31,11 @@ class Person(models.Model):
         
     def __str__(self):
         return f"Person: {str(self.name)} {str(self.surname)} {str(self.surname2)} ({str(self.birth)}) #{str(self.id)}"
+    def create_log( self, new):
+        create_log(new, ['name', 'surname', 'surname2', 'birth', 'death', 'gender'])
+
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', 'surname', 'surname2', 'birth', 'death', 'gender'])
 
     ## Generate a search string
     def update_search_string( self, request=None):
@@ -90,6 +95,13 @@ class Alias(models.Model):
     class Meta:
         managed = True
         db_table = 'alias'
+        
+    def create_log( self, new):
+        create_log(new, ['name', ])
+
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
+
 
 class PersonRelationType(models.IntegerChoices):
     Wife = 0, _('Wife')
@@ -114,7 +126,12 @@ class RelationShip(models.Model):
     class Meta:
         managed = True
         db_table = 'relationship'
+        
+    def create_log( self, new):
+        create_log(new, ['retypes', 'destiny' ])
 
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'destiny' ])
 
 class AddressType(models.IntegerChoices):
     Home = 0, _('Home')
@@ -133,23 +150,31 @@ class Address(models.Model):
     class Meta:
         managed = True
         db_table = 'addresses'
-        
 
-    def create_log( self):
-        r=[]
-        for field in ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country']:
-            r.append((field,  getattr(self, field)))
-        s=f"{self.__class__.__name__}, {r}"
-        l=Log(datetime=self.dt_update, person=self.person, retypes=LogType.ContactValueAdded, text=s)
-        l.save()    
-        
-    def update_log( self, old, new):
-        r=[]
-        for field in ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country']:
-            r.append((field,  getattr(old, field), getattr(new, field)))
-        s=f"{self.__class__.__name__}, {r}"
-        l=Log(datetime=self.dt_update, person=self.person, retypes=LogType.ContactValueChanged, text=s)
-        l.save()
+    def create_log( self, new):
+        create_log(new, ['retypes', 'address', 'code', 'city', 'country'])
+
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
+
+def create_log(object,  fields):
+    r=[]
+    for field in fields:
+        r.append((field,  getattr(object, field)))
+    s=f"{object.__class__.__name__}, {r}"
+    l=Log(datetime=object.dt_update, person=object.person, retypes=LogType.ContactValueAdded, text=s)
+    l.save()    
+    
+def update_log( old, new_validated_data, fields):
+    r=[]
+    for field in fields:
+        old_field= getattr(old, field)
+        new_field=new_validated_data[field]
+        if old_field!=new_field:
+            r.append((field,  old_field, new_field))
+    s=f"{old.__class__.__name__}, {old.id}, {r}"
+    l=Log(datetime=new_validated_data['dt_update'], person=old.person, retypes=LogType.ContactValueChanged, text=s)
+    l.save()
 
 class PhoneType(models.IntegerChoices):
     Home = 0, _('Home')     
@@ -167,7 +192,12 @@ class Phone(models.Model):
     class Meta:
         managed = True
         db_table = 'phones'
-        
+
+    def create_log( self, new):
+        create_log(new, ['retypes', 'phone' ])
+
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'phone' ])
         
 class MailType(models.IntegerChoices):
     Personal = 0, _('Personal')
@@ -183,7 +213,12 @@ class Mail(models.Model):
     class Meta:
         managed = True
         db_table = 'mails'
-        
+
+    def create_log( self, new):
+        create_log(new, ['retypes', 'mail' ])
+
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'mail' ])
     def __str__(self):
         return f"Mail: {self.mail} of type {self.retypes}"
 
