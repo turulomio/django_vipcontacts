@@ -103,7 +103,7 @@ class Alias(models.Model):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
 
 
-class PersonRelationType(models.IntegerChoices):
+class RelationShipType(models.IntegerChoices):
     Wife = 0, _('Wife')
     Husband= 1, _('Husband')
     Son = 2, _('Son')
@@ -121,7 +121,7 @@ class RelationShip(models.Model):
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     person = models.ForeignKey('Person', related_name="relationship", on_delete=models.CASCADE, blank=False, null=False,)
-    retypes=models.IntegerField(choices=PersonRelationType.choices, blank=False,  null=False)
+    retypes=models.IntegerField(choices=RelationShipType.choices, blank=False,  null=False)
     destiny =  models.ForeignKey('Person', related_name="+", on_delete=models.DO_NOTHING, blank=False, null=False)
     class Meta:
         managed = True
