@@ -19,5 +19,6 @@ urlpatterns = [
     path('login/', views.login), 
     path('logout/', views.logout), 
     path('api/find/', views.person_find),
+    path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
 ]
 

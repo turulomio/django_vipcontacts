@@ -29,8 +29,11 @@ class Person(models.Model):
         managed = True
         db_table = 'persons'
         
+    def fullName(self):
+        return f"{str(self.name)} {str(self.surname)} {str(self.surname2)}"
+        
     def __str__(self):
-        return f"Person: {str(self.name)} {str(self.surname)} {str(self.surname2)} ({str(self.birth)}) #{str(self.id)}"
+        return f"Person: {self.fullName()} ({str(self.birth)}) #{str(self.id)}"
     def create_log( self, new):
         create_log(new, ['name', 'surname', 'surname2', 'birth', 'death', 'gender'])
 
@@ -63,17 +66,20 @@ class Person(models.Model):
         for o in x["address"]:
             s=s+add(o["address"])
             s=s+add(o["city"])
-        for o in x["log"]:
-            s=s+add(o["text"])
+#        for o in x["log"]:
+#            s=s+add(o["text"])
         for o in x["alias"]:
             s=s+add(o["name"])
+#        for o in x["relationship"]:
+#            s=s+add(o["name"])
         Search.objects.filter(person=self).delete()
         search=Search( person=self, string=s)
         search.save()
 
 class LogType(models.IntegerChoices):
-    ContactValueChanged= 0, _('Contact value changed')
-    ContactValueAdded = 1, _('Contact value added')
+    ContactValueChanged= 0, _('Contact data changed')
+    ContactValueAdded = 1, _('Contact data added')
+    ContactValueDeleted = 2, _('Contact data deleted')
     
     #Automatic are <100
     Personal=100, _("Personal")

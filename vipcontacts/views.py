@@ -95,4 +95,14 @@ def person_find(request):
 
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
+    
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def person_get_relationship_fullnames(request, person_id):
+    r=[]
+    qs_relationships=RelationShip.objects.all().filter(person_id=person_id).select_related("person")
+    for o in qs_relationships:
+        r.append({"id": o.destiny.id, "name":o.destiny.fullName()})
+    return JsonResponse(r, safe=False)
 
