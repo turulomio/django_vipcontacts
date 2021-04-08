@@ -188,16 +188,20 @@ class PhoneType(models.IntegerChoices):
     PersonalMobile= 3, _('Personal mobile')
     WorkMobile= 4, _('Work mobile')
     Others= 5, _('Others')
+    FaxWork=6,  _('Work fax')
     
 class Phone(models.Model):
     person = models.ForeignKey('Person', related_name="phone",  on_delete= models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     retypes=models.IntegerField(choices=PhoneType.choices, blank=False,  null=False)
-    phone=models.CharField(max_length=20, blank=False, null=True) 
+    phone=models.CharField(max_length=50, blank=False, null=True) 
     class Meta:
         managed = True
         db_table = 'phones'
+
+    def __str__(self):
+        return f"Phone: {self.phone} #{self.id}"
 
     def create_log( self, new):
         create_log(new, ['retypes', 'phone' ])

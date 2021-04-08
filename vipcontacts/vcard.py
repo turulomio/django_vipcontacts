@@ -1,4 +1,4 @@
-from vipcontacts.models import Person, Mail, MailType
+from vipcontacts.models import Person, Mail, MailType, PhoneType,  Phone
 import vobject
 from django.utils import timezone
 
@@ -59,6 +59,7 @@ class VCard:
         if not 'email' in self._vcard.contents:
             return []
         for o in self._vcard.contents['email']:
+            o.value=o.value.replace(" ", "")
             if not "TYPE" in o.params:
                 r.append((o.value,  MailType.Other))
             elif o.params["TYPE"]==['HOME']:
@@ -81,11 +82,24 @@ class VCard:
 
     def phones(self):
         r=[]
+        if not 'tel' in self._vcard.contents:
+            return []
         for o in self._vcard.contents['tel']:
-            r.append((o.value, o.name, o.params))
+            o.value=o.value.replace(" ", "")
+            if not "TYPE" in o.params:
+                r.append((o.value,  PhoneType.Others))
+            elif o.params["TYPE"]==['WORK']:
+                r.append((o.value,  PhoneType.Work))
+            elif o.params["TYPE"]==['HOME'] or o.params["TYPE"]==['HOME', 'PREF']:
+                r.append((o.value,  PhoneType.Home))
+            elif o.params["TYPE"]==['CELL'] or o.params["TYPE"]==['CELL', 'PREF']:
+                r.append((o.value,  PhoneType.PersonalMobile))
+            elif o.params["TYPE"]==['FAX'] or o.params["TYPE"]==['FAX', 'WORK']:
+                r.append((o.value,  PhoneType.FaxWork))
+            else:
+                print(f"  - Mail type missing: {o.params['TYPE']}")
+                r.append((o.value,  PhoneType.Others))
         return r
-
-
 
 def import_in_vipcontacts(filename):
     vcard=VCard(filename)
@@ -100,6 +114,13 @@ def import_in_vipcontacts(filename):
         mail=Mail(dt_update=timezone.now(), mail=mail,  retypes=type_,  person=person)
         mail.save()
         print (f"  - {mail}")
+        
+    for phone, type_ in vcard.phones():
+        phone=Phone(dt_update=timezone.now(), phone=phone,  retypes=type_,  person=person)
+        phone.save()
+        print (f"  - {phone}")
   
+    
+    person.update_search_string()
     return person
         
