@@ -165,6 +165,27 @@ class Address(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
 
+    
+class Job(models.Model):
+    person = models.ForeignKey('Person',related_name="job",  on_delete= models.CASCADE, blank=False, null=False)
+    dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
+    dt_obsolete=models.DateTimeField(blank=False, null=True)
+    organization=models.CharField(max_length=300, blank=True, null=False)
+    profession=models.CharField(max_length=300, blank=True, null=False)
+    title=models.CharField(max_length=300, blank=True, null=False)
+    department=models.CharField(max_length=300, blank=True, null=False)
+    class Meta:
+        managed = True
+        db_table = 'jobs'
+
+    def create_log( self, new):
+        create_log(new, ['organization', 'profession', 'title', 'department'])
+
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'organization', 'profession', 'title', 'department'])
+
+
+
 def create_log(object,  fields, dt_update=None, person=None):
     dt_update=object.dt_update if dt_update is None else dt_update
     person=object.person if person is None else person

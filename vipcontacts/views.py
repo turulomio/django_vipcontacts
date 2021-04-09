@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
-from vipcontacts.models import Person, Alias, Address,  RelationShip,  Log, Phone, Mail, Search
-from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
+from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search
+from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -18,6 +18,11 @@ class AddressViewSet(viewsets.ModelViewSet):
 class AliasViewSet(viewsets.ModelViewSet):
     queryset = Alias.objects.all()
     serializer_class = AliasSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+    
+class JobViewSet(viewsets.ModelViewSet):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
     permission_classes = [permissions.IsAuthenticated] 
     
 class LogViewSet(viewsets.ModelViewSet):
@@ -104,5 +109,15 @@ def person_get_relationship_fullnames(request, person_id):
     qs_relationships=RelationShip.objects.all().filter(person_id=person_id).select_related("person")
     for o in qs_relationships:
         r.append({"id": o.destiny.id, "name":o.destiny.fullName()})
+    return JsonResponse(r, safe=False)
+    
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def professions(request):
+    r=[]
+    qs=Job.objects.order_by().values('profession').distinct()
+    for o in qs:
+        r.append({"profession": o.profession()})
     return JsonResponse(r, safe=False)
 
