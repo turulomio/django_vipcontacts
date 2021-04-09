@@ -18,6 +18,8 @@ class PersonGender(models.IntegerChoices):
 
 # Create your models here.
 class Person(models.Model):
+    dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
+    dt_obsolete=models.DateTimeField(blank=False, null=True)
     name = models.CharField(max_length=100, blank=True, null=False)
     surname = models.CharField(max_length=100, blank=True, null=False)
     surname2 = models.CharField(max_length=100, blank=True, null=False)
@@ -35,10 +37,10 @@ class Person(models.Model):
     def __str__(self):
         return f"Person: {self.fullName()} ({str(self.birth)}) #{str(self.id)}"
     def create_log( self, new):
-        create_log(new, ['name', 'surname', 'surname2', 'birth', 'death', 'gender'])
+        create_log(new, ['name', 'surname', 'surname2', 'birth', 'death', 'gender'], person=self)
 
     def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', 'surname', 'surname2', 'birth', 'death', 'gender'])
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', 'surname', 'surname2', 'birth', 'death', 'gender'], person=self)
 
     ## Generate a search string
     def update_search_string( self, request=None):
@@ -163,15 +165,19 @@ class Address(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
 
-def create_log(object,  fields):
+def create_log(object,  fields, dt_update=None, person=None):
+    dt_update=object.dt_update if dt_update is None else dt_update
+    person=object.person if person is None else person
     r=[]
     for field in fields:
         r.append((field,  getattr(object, field)))
     s=f"{object.__class__.__name__}, {r}"
-    l=Log(datetime=object.dt_update, person=object.person, retypes=LogType.ContactValueAdded, text=s)
+    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueAdded, text=s)
     l.save()    
     
-def update_log( old, new_validated_data, fields):
+def update_log( old, new_validated_data, fields, dt_update=None, person=None):
+    dt_update=new_validated_data['dt_update'] if dt_update is None else dt_update
+    person=new_validated_data['person'] if person is None else person
     r=[]
     for field in fields:
         old_field= getattr(old, field)
@@ -179,7 +185,7 @@ def update_log( old, new_validated_data, fields):
         if old_field!=new_field:
             r.append((field,  old_field, new_field))
     s=f"{old.__class__.__name__}, {old.id}, {r}"
-    l=Log(datetime=new_validated_data['dt_update'], person=old.person, retypes=LogType.ContactValueChanged, text=s)
+    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueChanged, text=s)
     l.save()
 
 class PhoneType(models.IntegerChoices):

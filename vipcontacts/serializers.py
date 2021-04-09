@@ -126,6 +126,7 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
+
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
     log=LogSerializer(many=True, read_only=True)
@@ -138,19 +139,19 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
-        created.person.update_search_string()
+        created.update_search_string()
         created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
         instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
-        updated.person.update_search_string()
+        updated.update_search_string()
         return updated
     
     class Meta:
         model = Person
-        fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
+        fields = ('dt_update','dt_obsolete','id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
         'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search')
         
         
