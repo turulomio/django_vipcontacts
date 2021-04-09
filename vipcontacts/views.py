@@ -118,6 +118,6 @@ def professions(request):
     r=[]
     qs=Job.objects.order_by().values('profession').distinct()
     for o in qs:
-        r.append({"profession": o.profession()})
+        r.append({"profession": o["profession"]})
     return JsonResponse(r, safe=False)
 
