@@ -110,6 +110,21 @@ class Alias(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
 
+class Group(models.Model):
+    person = models.ForeignKey('Person', related_name="group",  on_delete=models.CASCADE, blank=False, null=False)
+    dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
+    dt_obsolete=models.DateTimeField(blank=False, null=True)
+    name=models.CharField(max_length=100, blank=False, null=False)
+    class Meta:
+        managed = True
+        db_table = 'groups'
+        
+    def create_log( self, new):
+        create_log(new, ['name', ])
+
+    def update_log( self, old, new_validated_data):
+        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
+
 
 class RelationShipType(models.IntegerChoices):
     Wife = 0, _('Wife')

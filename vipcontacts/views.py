@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import permissions
-from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search
-from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
+from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group
+from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -18,6 +18,11 @@ class AddressViewSet(viewsets.ModelViewSet):
 class AliasViewSet(viewsets.ModelViewSet):
     queryset = Alias.objects.all()
     serializer_class = AliasSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+    
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated] 
     
 class JobViewSet(viewsets.ModelViewSet):
@@ -119,5 +124,36 @@ def professions(request):
     qs=Job.objects.order_by().values('profession').distinct()
     for o in qs:
         r.append({"profession": o["profession"]})
+    return JsonResponse(r, safe=False)
+    
+    
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def organizations(request):
+    r=[]
+    qs=Job.objects.order_by().values('organization').distinct()
+    for o in qs:
+        r.append({"organization": o["organization"]})
+    return JsonResponse(r, safe=False)
+
+@csrf_exempt    
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def departments(request):
+    r=[]
+    qs=Job.objects.order_by().values('department').distinct()
+    for o in qs:
+        r.append({"department": o["department"]})
+    return JsonResponse(r, safe=False)
+
+@csrf_exempt    
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def titles(request):
+    r=[]
+    qs=Job.objects.order_by().values('title').distinct()
+    for o in qs:
+        r.append({"title": o["title"]})
     return JsonResponse(r, safe=False)
 

@@ -1,4 +1,4 @@
-from vipcontacts.models import Alias, Person, Address, RelationShip, Job, Log, Phone, Mail, Search
+from vipcontacts.models import Alias, Person, Address, Group, RelationShip, Job, Log, Phone, Mail, Search
 from rest_framework import serializers
 
 class AddressSerializer(serializers.HyperlinkedModelSerializer):
@@ -21,6 +21,23 @@ class AddressSerializer(serializers.HyperlinkedModelSerializer):
 class AliasSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Alias
+        fields = ('id','url', 'name',  'dt_update',  'dt_obsolete', 'person')
+
+    def create(self, validated_data):
+        created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
+        created.person.update_search_string()
+        created.create_log(created)
+        return created
+    
+    def update(self, instance, validated_data):
+        instance.update_log(instance, validated_data)
+        updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
+        updated.person.update_search_string()
+        return updated
+        
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
         fields = ('id','url', 'name',  'dt_update',  'dt_obsolete', 'person')
 
     def create(self, validated_data):
@@ -147,6 +164,7 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     phone = PhoneSerializer(many=True,  read_only=True)
     search = SearchSerializer(many=True,  read_only=True)
     job = JobSerializer(many=True,  read_only=True)
+    group = GroupSerializer(many=True,  read_only=True)
 
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -163,7 +181,7 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
         fields = ('dt_update','dt_obsolete','id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
-        'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search', 'job')
+        'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search', 'job', 'group')
         
         
 class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):

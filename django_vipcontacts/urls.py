@@ -9,6 +9,7 @@ router.register(r'api/alias', views.AliasViewSet)
 router.register(r'api/address', views.AddressViewSet)
 router.register(r'api/relationship', views.RelationShipViewSet)
 router.register(r'api/phone', views.PhoneViewSet)
+router.register(r'api/group', views.GroupViewSet)
 router.register(r'api/job', views.JobViewSet)
 router.register(r'api/mail', views.MailViewSet)
 router.register(r'api/log', views.LogViewSet)
@@ -21,6 +22,9 @@ urlpatterns = [
     path('logout/', views.logout), 
     path('api/find/', views.person_find),
     path('api/professions/', views.professions),
+    path('api/organizations/', views.organizations),
+    path('api/departments/', views.departments),
+    path('api/titles/', views.titles),
     path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
 ]
 
