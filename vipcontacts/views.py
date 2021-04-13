@@ -156,4 +156,14 @@ def titles(request):
     for o in qs:
         r.append({"title": o["title"]})
     return JsonResponse(r, safe=False)
+    
+@csrf_exempt    
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def groups(request):
+    r=[]
+    qs=Group.objects.values('name').distinct().order_by()
+    for o in qs:
+        r.append({"name": o["name"]})
+    return JsonResponse(r, safe=False)
 
