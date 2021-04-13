@@ -94,6 +94,8 @@ class Log(models.Model):
     class Meta:
         managed = True
         db_table = 'logs'
+    def __str__(self):
+        return f"Log: {self.text} #{self.id}"
 
 class Alias(models.Model):
     person = models.ForeignKey('Person', related_name="alias",  on_delete=models.CASCADE, blank=False, null=False)
@@ -125,6 +127,8 @@ class Group(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
 
+    def __str__(self):
+        return f"Group: {self.name} #{self.id}"
 
 class RelationShipType(models.IntegerChoices):
     Wife = 0, _('Wife')
@@ -174,6 +178,9 @@ class Address(models.Model):
         managed = True
         db_table = 'addresses'
 
+    def __str__(self):
+        return f"Address: {self.address}, {self.code} {self.city}, {self.country} #{self.id}"
+
     def create_log( self, new):
         create_log(new, ['retypes', 'address', 'code', 'city', 'country'])
 
@@ -199,6 +206,8 @@ class Job(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'organization', 'profession', 'title', 'department'])
 
+    def __str__(self):
+        return f"Job: {self.organization}"
 
 
 def create_log(object,  fields, dt_update=None, person=None):

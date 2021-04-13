@@ -1,4 +1,4 @@
-from vipcontacts.models import Person, Mail, MailType, PhoneType,  Phone
+from vipcontacts.models import Person, Mail, MailType, PhoneType,  Phone, Address, AddressType, Log, Job, Group
 import vobject
 from django.utils import timezone
 
@@ -101,6 +101,45 @@ class VCard:
                 r.append((o.value,  PhoneType.Others))
         return r
 
+    #Address, city, code, country
+    def addresses(self):
+        r=[]
+        if not 'adr' in self._vcard.contents:
+            return []
+        for o in self._vcard.contents['adr']:
+            addr=str(o.value).replace("\n", ". ")
+            r.append(addr)
+        return r
+
+    def logs(self):
+        r=[]
+        if not 'note' in self._vcard.contents:
+            return []
+        for o in self._vcard.contents['note']:
+            addr=str(o.value).replace("\n", ". ").replace("\\", "")
+            r.append(addr)
+        return r
+
+    def categories(self):
+        r=[]
+        if not 'categories' in self._vcard.contents:
+            return []
+        for o in self._vcard.contents['categories']:
+            for cat in o.value:
+#            addr=str(o.value).replace("\n", ". ").replace("\\", "")
+                r.append(cat)
+        return r
+
+    def jobs(self):
+        r=[]
+        if not 'org' in self._vcard.contents:
+            return []
+        for o in self._vcard.contents['org']:
+            job=str(o.value).replace("\n", ". ").replace("\\", "")
+            r.append(job)
+        return r
+
+
 def import_in_vipcontacts(filename):
     vcard=VCard(filename)
     print(f"Trying {filename}:")
@@ -120,6 +159,25 @@ def import_in_vipcontacts(filename):
         phone.save()
         print (f"  - {phone}")
   
+    for address in vcard.addresses():
+        address=Address(dt_update=timezone.now(), retypes=AddressType.Work, address=address, city="", code="", country="ES", person=person)
+        address.save()
+        print (f"  - {address}")
+
+    for text in vcard.logs():
+        log=Log(datetime=timezone.now(), retypes=100, text=text, person=person)
+        log.save()
+        print (f"  - {log}")
+    
+    for name in vcard.categories():
+        group=Group(dt_update=timezone.now(), name=name, person=person)
+        group.save()
+        print (f"  - {group}")
+    
+    for name in vcard.jobs():
+        job=Job(dt_update=timezone.now(), organization=name, person=person)
+        job.save()
+        print (f"  - {job}")
     
     person.update_search_string()
     return person
