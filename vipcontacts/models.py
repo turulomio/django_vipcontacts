@@ -8,6 +8,38 @@ LIST_COUNTRIES=[]
 for  country in countries:
     LIST_COUNTRIES.append((country.alpha_2, country.name))
 
+def create_log(object,  fields, dt_update=None, person=None):
+    dt_update=object.dt_update if dt_update is None else dt_update
+    person=object.person if person is None else person
+    r=[]
+    for field in fields:
+        r.append((field,  getattr(object, field)))
+    s=f"{object.__class__.__name__}, {r}"
+    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueAdded, text=s)
+    l.save()    
+    
+    
+def delete_log(object,  fields, dt_update=None, person=None):
+    person=object.person if person is None else person
+    r=[]
+    for field in fields:
+        r.append((field,  getattr(object, field)))
+    s=f"{object.__class__.__name__}, {r}"
+    l=Log(datetime=timezone.now(), person=person, retypes=LogType.ContactValueDeleted, text=s)
+    l.save()    
+    
+def update_log( old, new_validated_data, fields, dt_update=None, person=None):
+    dt_update=new_validated_data['dt_update'] if dt_update is None else dt_update
+    person=new_validated_data['person'] if person is None else person
+    r=[]
+    for field in fields:
+        old_field= getattr(old, field)
+        new_field=new_validated_data[field]
+        if old_field!=new_field:
+            r.append((field,  old_field, new_field))
+    s=f"{old.__class__.__name__}, {old.id}, {r}"
+    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueChanged, text=s)
+    l.save()
 
 
 class PersonGender(models.IntegerChoices):
@@ -112,6 +144,9 @@ class Alias(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
 
+    def delete_log( self):
+        delete_log(self, ['dt_update', 'dt_obsolete', 'name', ])
+    
 class Group(models.Model):
     person = models.ForeignKey('Person', related_name="group",  on_delete=models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
@@ -126,6 +161,8 @@ class Group(models.Model):
 
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
+    def delete_log( self):
+        delete_log(self, ['dt_update', 'dt_obsolete', 'name', ])
 
     def __str__(self):
         return f"Group: {self.name} #{self.id}"
@@ -160,6 +197,9 @@ class RelationShip(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'destiny' ])
 
+    def delete_log( self):
+        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'destiny' ])
+
 class AddressType(models.IntegerChoices):
     Home = 0, _('Home')
     Work= 1, _('Work')
@@ -187,6 +227,8 @@ class Address(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
 
+    def delete_log( self):
+        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
     
 class Job(models.Model):
     person = models.ForeignKey('Person',related_name="job",  on_delete= models.CASCADE, blank=False, null=False)
@@ -210,28 +252,8 @@ class Job(models.Model):
         return f"Job: {self.organization}"
 
 
-def create_log(object,  fields, dt_update=None, person=None):
-    dt_update=object.dt_update if dt_update is None else dt_update
-    person=object.person if person is None else person
-    r=[]
-    for field in fields:
-        r.append((field,  getattr(object, field)))
-    s=f"{object.__class__.__name__}, {r}"
-    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueAdded, text=s)
-    l.save()    
-    
-def update_log( old, new_validated_data, fields, dt_update=None, person=None):
-    dt_update=new_validated_data['dt_update'] if dt_update is None else dt_update
-    person=new_validated_data['person'] if person is None else person
-    r=[]
-    for field in fields:
-        old_field= getattr(old, field)
-        new_field=new_validated_data[field]
-        if old_field!=new_field:
-            r.append((field,  old_field, new_field))
-    s=f"{old.__class__.__name__}, {old.id}, {r}"
-    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueChanged, text=s)
-    l.save()
+    def delete_log( self):
+        delete_log(self, ['dt_update', 'dt_obsolete', 'organization', 'profession', 'title', 'department'])
 
 class PhoneType(models.IntegerChoices):
     Home = 0, _('Home')     
@@ -260,6 +282,9 @@ class Phone(models.Model):
     def update_log( self, old, new_validated_data):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'phone' ])
         
+    def delete_log( self):
+        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'phone' ])
+        
 class MailType(models.IntegerChoices):
     Personal = 0, _('Personal')
     Work= 1, _('Work')
@@ -282,6 +307,9 @@ class Mail(models.Model):
         update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'mail' ])
     def __str__(self):
         return f"Mail: {self.mail} of type {self.retypes}"
+
+    def delete_log( self):
+        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'mail' ])
 
 class Search(models.Model):
     person = models.ForeignKey('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)

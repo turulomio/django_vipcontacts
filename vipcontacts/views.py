@@ -3,8 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework import viewsets,  status, permissions
 from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -15,30 +14,74 @@ class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
     permission_classes = [permissions.IsAuthenticated]  
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class AliasViewSet(viewsets.ModelViewSet):
     queryset = Alias.objects.all()
     serializer_class = AliasSerializer
     permission_classes = [permissions.IsAuthenticated] 
-    
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated] 
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     
 class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
     permission_classes = [permissions.IsAuthenticated] 
     
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 class LogViewSet(viewsets.ModelViewSet):
     queryset = Log.objects.all()
     serializer_class = LogSerializer
     permission_classes = [permissions.IsAuthenticated] 
     
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
 class RelationShipViewSet(viewsets.ModelViewSet):
     queryset = RelationShip.objects.all()
     serializer_class = RelationShipSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = Person.objects.all()
@@ -50,6 +93,13 @@ class PhoneViewSet(viewsets.ModelViewSet):
     serializer_class = PhoneSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class SearchViewSet(viewsets.ModelViewSet):
     queryset = Search.objects.all()
     serializer_class = SearchSerializer
@@ -59,6 +109,13 @@ class MailViewSet(viewsets.ModelViewSet):
     queryset = Mail.objects.all()
     serializer_class = MailSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        instance.delete_log()
+        instance.person.update_search_string()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
 def login(request):
@@ -119,7 +176,15 @@ def person_get_relationship_fullnames(request, person_id):
 @csrf_exempt
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
-def professions(request):
+def professions(request):    
+    search=request.GET.get("search", "__none__")
+    if search=="__none__":
+        qs=Job.objects.none()
+    elif search=="__all__":
+        qs=Job.objects.values('profession').distinct()
+    else:
+        qs=Job.objects.values('profession').distinct().filter(profession__icontains=search).order_by()
+
     r=[]
     qs=Job.objects.order_by().values('profession').distinct()
     for o in qs:
@@ -131,6 +196,14 @@ def professions(request):
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def organizations(request):
+    search=request.GET.get("search", "__none__")
+    if search=="__none__":
+        qs=Job.objects.none()
+    elif search=="__all__":
+        qs=Job.objects.values('organization').distinct()
+    else:
+        qs=Job.objects.values('organization').distinct().filter(organization__icontains=search).order_by()
+
     r=[]
     qs=Job.objects.order_by().values('organization').distinct()
     for o in qs:
@@ -140,7 +213,14 @@ def organizations(request):
 @csrf_exempt    
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
-def departments(request):
+def departments(request):    
+    search=request.GET.get("search", "__none__")
+    if search=="__none__":
+        qs=Job.objects.none()
+    elif search=="__all__":
+        qs=Job.objects.values('department').distinct()
+    else:
+        qs=Job.objects.values('department').distinct().filter(department__icontains=search).order_by()
     r=[]
     qs=Job.objects.order_by().values('department').distinct()
     for o in qs:
@@ -151,6 +231,13 @@ def departments(request):
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def titles(request):
+    search=request.GET.get("search", "__none__")
+    if search=="__none__":
+        qs=Job.objects.none()
+    elif search=="__all__":
+        qs=Job.objects.values('title').distinct()
+    else:
+        qs=Job.objects.values('title').distinct().filter(title__icontains=search).order_by()
     r=[]
     qs=Job.objects.order_by().values('title').distinct()
     for o in qs:
@@ -161,8 +248,14 @@ def titles(request):
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def groups(request):
+    search=request.GET.get("search", "__none__")
+    if search=="__none__":
+        qs=Group.objects.none()
+    elif search=="__all__":
+        qs=Group.objects.values('name').distinct()
+    else:
+        qs=Group.objects.values('name').distinct().filter(name__icontains=search).order_by()
     r=[]
-    qs=Group.objects.values('name').distinct().order_by()
     for o in qs:
         r.append({"name": o["name"]})
     return JsonResponse(r, safe=False)
