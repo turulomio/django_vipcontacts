@@ -100,8 +100,9 @@ class Person(models.Model):
         for o in x["address"]:
             s=s+add(o["address"])
             s=s+add(o["city"])
-#        for o in x["log"]:
-#            s=s+add(o["text"])
+        for o in x["log"]:
+            if o["retypes"]==LogType.Personal:
+                s=s+add(o["text"])
         for o in x["alias"]:
             s=s+add(o["name"])
 #        for o in x["relationship"]:

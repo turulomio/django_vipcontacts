@@ -112,11 +112,11 @@ class LogSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         created.person.update_search_string()
-        created.create_log(created)
+        #created.create_log(created)
         return created
     
     def update(self, instance, validated_data):
-        instance.update_log(instance, validated_data)
+        #instance.update_log(instance, validated_data)
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated

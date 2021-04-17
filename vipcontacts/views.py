@@ -67,7 +67,6 @@ class LogViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
         
