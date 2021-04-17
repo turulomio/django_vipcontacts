@@ -187,6 +187,14 @@ class RelationShipType(models.IntegerChoices):
     Friend= 10,  _('Friend')
     Boss= 11,  _('Boss')
     Subordinate= 12,  _('Subordinate')
+    Cousin=13,  _('Cousin')
+    Brother=14,  _('Brother')
+    Sister=15,  _('Sister')
+    Couple=16,  _('Couple')
+    MotherInLaw=17,  _('Mother in law')
+    FatherInLaw=18,   _('Father in law')
+    DaughterInLaw=19,   _('Daughter in law')
+    SonInLaw=20,   _('Son in law')
 
 ## person type destiny
 ## M Husband N

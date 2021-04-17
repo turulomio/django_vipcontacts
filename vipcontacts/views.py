@@ -276,7 +276,6 @@ def group_members(request):
             qs=Person.objects.all().filter(id__in=person_ids).distinct()
         else:
             qs=Person.objects.all().exclude(id__in=person_ids).distinct()
-            
 
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
