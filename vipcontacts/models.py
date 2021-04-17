@@ -105,6 +105,11 @@ class Person(models.Model):
                 s=s+add(o["text"])
         for o in x["alias"]:
             s=s+add(o["name"])
+        for o in x["job"]:
+            s=s+add(o["profession"])
+            s=s+add(o["organization"])
+            s=s+add(o["department"])
+            s=s+add(o["title"])
 #        for o in x["relationship"]:
 #            s=s+add(o["name"])
         Search.objects.filter(person=self).delete()
