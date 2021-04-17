@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK={ 
     'DEFAULT_AUTHENTICATION_CLASSES':[
         'rest_framework.authentication.BasicAuthentication',  ## Uncomment to use api in url 
