@@ -266,12 +266,17 @@ def groups(request):
 @permission_classes([permissions.IsAuthenticated, ])
 def group_members(request):
     search=request.GET.get("search", "__none__")
+    members=request.GET.get("members",  "true")
     if search=="__none__":
         qs=Person.objects.none()
     else:
         qs_search=Group.objects.all().filter(name=search)
         person_ids=[s.person.id for s in qs_search]
-        qs=Person.objects.all().filter(id__in=person_ids).distinct()
+        if members=="true":
+            qs=Person.objects.all().filter(id__in=person_ids).distinct()
+        else:
+            qs=Person.objects.all().exclude(id__in=person_ids).distinct()
+            
 
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
