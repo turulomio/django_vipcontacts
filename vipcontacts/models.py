@@ -152,7 +152,6 @@ class Group(models.Model):
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     name=models.CharField(max_length=100, blank=False, null=False)
-    editable=models.BooleanField(null=False, default=True)
     class Meta:
         managed = True
         db_table = 'groups'
