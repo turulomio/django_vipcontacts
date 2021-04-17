@@ -1,4 +1,4 @@
-from vipcontacts.models import Person, Mail, MailType, PhoneType,  Phone, Address, AddressType, Log, Job, Group, LogTypes
+from vipcontacts.models import Person, Mail, MailType, PhoneType,  Phone, Address, AddressType, Log, Job, Group, LogType
 import vobject
 from django.utils import timezone
 
@@ -165,7 +165,7 @@ def import_in_vipcontacts(filename):
         print (f"  - {address}")
 
     for text in vcard.logs():
-        log=Log(datetime=timezone.now(), retypes=LogTypes.Personal, text=text, person=person)
+        log=Log(datetime=timezone.now(), retypes=LogType.Personal, text=text, person=person)
         log.save()
         print (f"  - {log}")
     
