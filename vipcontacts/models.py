@@ -228,7 +228,7 @@ class Address(models.Model):
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     retypes=models.IntegerField(choices=AddressType.choices, blank=False,  null=False)
     address=models.CharField(max_length=300, blank=False, null=False)
-    code=models.CharField(max_length=10, blank=False, null=True)
+    code=models.CharField(max_length=10, blank=True, null=True)
     city=models.CharField(max_length=100, blank=False, null=False)
     country=models.CharField(max_length=2, choices=LIST_COUNTRIES,  blank=False, null=False)    
     class Meta:
