@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from os import system, chdir
-from books.__init__ import __version__
+from vipcontacts.__init__ import __version__
 
 class Command(BaseCommand):
     help = 'Create doxygen documentation'
@@ -22,5 +22,5 @@ class Command(BaseCommand):
         chdir("..")
 
 
-        system("rsync -avzP -e 'ssh -l turulomio' html/ frs.sourceforge.net:/home/users/t/tu/turulomio/userweb/htdocs/doxygen/django_money/ --delete-after")
+        system("rsync -avzP -e 'ssh -l turulomio' html/ frs.sourceforge.net:/home/users/t/tu/turulomio/userweb/htdocs/doxygen/django_vipcontacts/ --delete-after")
 

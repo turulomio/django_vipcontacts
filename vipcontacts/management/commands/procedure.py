@@ -17,8 +17,8 @@ class Command(BaseCommand):
 DJANGO_VIPCONTACTS
   * Change version and version date in vipcontacts.__init__.py
   * Add release changelog en README.md
-  * python manage.py makemessages
-  * linguist
+  * python manage.py makemessages --all
+  * mcedit vipcontacts/locale/es/LC_MESSAGES/django.po
   * python manage.py compilemessages
   * python manage.py doxygen
   * git commit -a -m 'django_vipcontacts-{__version__}'

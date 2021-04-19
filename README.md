@@ -1,5 +1,16 @@
 # django_vipcontacts
 
+## Links
+
+Doxygen documentation:
+    http://turulomio.users.sourceforge.net/doxygen/django_vipcontacts/
+
+Github web page:
+    https://github.com/turulomio/django_vipcontacts/
+
+Pypi web page:
+    https://pypi.org/project/xulpymoney/
+
 ## Dependencies
 
 * Django
