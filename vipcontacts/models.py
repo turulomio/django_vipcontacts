@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 from pycountry import countries
+from string import digits
 
 #Create countries class
 LIST_COUNTRIES=[]
@@ -110,11 +111,14 @@ class Person(models.Model):
             s=s+add(o["organization"])
             s=s+add(o["department"])
             s=s+add(o["title"])
-#        for o in x["relationship"]:
-#            s=s+add(o["name"])
+        for o in x["relationship"]:
+            destiny=person_from_person_url(o["destiny"])
+            s=s+add(destiny.fullName())
         Search.objects.filter(person=self).delete()
         search=Search( person=self, string=s)
         search.save()
+        
+
 
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact data changed')
@@ -338,34 +342,7 @@ class Search(models.Model):
     def __str__(self):
         return f"Searchs: {self.string}"
         
-#    ## Generate a search string
-#    def person_search_string(self, request=None):
-#        def add(s):
-#            if s==None:
-#                return ""
-#            else:
-#                return " " + s
-#        ######
-#        if self.person is None:
-#            print ("person_search_string set person first")
-#            return ""
-#        from vipcontacts.serializers import PersonSerializer
-#        serializer = PersonSerializer(self.person, many=False,context={'request': request} )
-#        x=serializer.data
-#        s=x["name"]
-#        s=s+add(x["surname"])
-#        s=s+add(x["surname2"])
-#        s=s+add(x["birth"])
-#        s=s+add(x["death"])
-#        for o in x["mail"]:
-#            s=s+add(o["mail"])
-#        for o in x["phone"]:
-#            s=s+add(o["phone"])
-#        for o in x["address"]:
-#            s=s+add(o["address"])
-#            s=s+add(o["city"])
-#        for o in x["log"]:
-#            s=s+add(o["text"])
-#        for o in x["alias"]:
-#            s=s+add(o["name"])
-#        return s
+
+def person_from_person_url(s):
+    id=''.join(c for c in s if c in digits)
+    return Person.objects.get(pk=id)

@@ -132,3 +132,4 @@ django_vipcontacts.epj
 mysettings.py
 ## For preproduction
 django_vipcontacts/presettings.py
+doc/html
