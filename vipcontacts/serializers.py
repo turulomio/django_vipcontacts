@@ -141,7 +141,7 @@ class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
 class SearchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Search
-        fields = ('url',  'string',  'person')
+        fields = ('url',  'string',  'chips','person')
 
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -185,9 +185,10 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
         
         
 class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):
+    search = SearchSerializer(many=True,  read_only=True)
     class Meta:
         model = Person
-        fields = ('id','url', 'name', 'surname', 'surname2',  'birth')
+        fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'search')
         
         
         

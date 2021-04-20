@@ -89,6 +89,8 @@ class Person(models.Model):
         from vipcontacts.serializers import PersonSerializer
         serializer = PersonSerializer(self, many=False,context={'request': request} )
         x=serializer.data
+        
+        ## SEARCH STRINGS
         s=x["name"]
         s=s+add(x["surname"])
         s=s+add(x["surname2"])
@@ -114,11 +116,29 @@ class Person(models.Model):
         for o in x["relationship"]:
             destiny=person_from_person_url(o["destiny"])
             s=s+add(destiny.fullName())
-        Search.objects.filter(person=self).delete()
-        search=Search( person=self, string=s)
-        search.save()
+            
+        ## CHIPS
+        chips=set()
+        for o in x['group']:
+            if o["dt_obsolete"] is None:
+                chips.add(o["name"])
         
+        lengthjobs=len(x['job'])
+        if lengthjobs>0:
+            lastjob=x['job'][lengthjobs-1]
+            if len(lastjob["profession"])>0:
+                chips.add(lastjob["profession"])
+            if len(lastjob["organization"])>0:
+                chips.add(lastjob["organization"])
+            if len(lastjob["department"])>0:
+                chips.add(lastjob["department"])
+            if len(lastjob["title"])>0:
+                chips.add(lastjob["title"])
 
+        ## SAVE OBJECT
+        Search.objects.filter(person=self).delete()
+        search=Search( person=self, string=s,  chips=list(chips))
+        search.save()
 
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact data changed')
@@ -335,6 +355,7 @@ class Mail(models.Model):
 class Search(models.Model):
     person = models.ForeignKey('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)
     string = models.TextField(blank=True, null=False)
+    chips=models.TextField(blank=True,  null=True)
     class Meta:
         managed = True
         db_table = 'searchs'
