@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 from pycountry import countries
-from string import digits
 
 #Create countries class
 LIST_COUNTRIES=[]
@@ -365,5 +364,6 @@ class Search(models.Model):
         
 
 def person_from_person_url(s):
-    id=''.join(c for c in s if c in digits)
+    arr=s.split("/")
+    id=arr[len(arr)-2]
     return Person.objects.get(pk=id)

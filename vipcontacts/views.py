@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
-from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group
+from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -279,4 +279,20 @@ def group_members(request):
 
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
-
+    
+    
+## Needs url and name get parameters
+@csrf_exempt
+@api_view(['DELETE', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def delete_group_by_name(request):
+    person_url=request.GET.get("url", None)
+    group_name=request.GET.get("name", None)
+    if person_url is None or group_name is None:
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+    person=person_from_person_url(person_url)
+    qs_groups=Group.objects.filter(person=person, name=group_name)
+    number=len(qs_groups)
+    qs_groups.delete()
+    return Response(f"Deleted: {number}")

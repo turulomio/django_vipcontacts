@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/organizations/', views.organizations),
     path('api/departments/', views.departments),
     path('api/groups/', views.groups),
+    path('api/groups/deletebyname/', views.delete_group_by_name),
     path('api/groups/members/', views.group_members),
     path('api/titles/', views.titles),
     path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
