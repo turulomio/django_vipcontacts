@@ -279,6 +279,26 @@ def group_members(request):
 
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
+        
+
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def group_members_full(request):
+    search=request.GET.get("search", "__none__")
+    members=request.GET.get("members",  "true")
+    if search=="__none__":
+        qs=Person.objects.none()
+    else:
+        qs_search=Group.objects.all().filter(name=search)
+        person_ids=[s.person.id for s in qs_search]
+        if members=="true":
+            qs=Person.objects.all().filter(id__in=person_ids).distinct()
+        else:
+            qs=Person.objects.all().exclude(id__in=person_ids).distinct()
+
+    serializer = PersonSerializer(qs, many=True, context={'request': request} )
+    return JsonResponse(serializer.data, safe=False)
     
     
 ## Needs url and name get parameters
