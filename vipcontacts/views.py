@@ -315,4 +315,5 @@ def delete_group_by_name(request):
     qs_groups=Group.objects.filter(person=person, name=group_name)
     number=len(qs_groups)
     qs_groups.delete()
+    person.update_search_string()
     return Response(f"Deleted: {number}")
