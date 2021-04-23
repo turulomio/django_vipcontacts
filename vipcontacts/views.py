@@ -118,7 +118,6 @@ class MailViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def login(request):
-    print(request.POST.get("username"),  request.POST.get("password"))
     try:
         user=User.objects.get(username=request.POST.get("username"))
     except User.DoesNotExist:
