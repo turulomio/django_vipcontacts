@@ -225,6 +225,8 @@ class RelationShipType(models.IntegerChoices):
     Stepmother=25,  _("Stepmother")
     Stepbrother=26,  _("Stepbrother")
     Stepsister=27,  _("Stepsister")
+    Uncle=28,  _("Uncle")
+    Aunt=29,  _("Aunt")
 
 ## person type destiny
 ## M Husband N

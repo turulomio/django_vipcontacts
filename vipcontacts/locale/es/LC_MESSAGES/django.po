@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-23 01:28+0000\n"
+"POT-Creation-Date: 2021-04-23 01:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr "Datos de contacto añadidos"
 msgid "Contact data deleted"
 msgstr "Datos de contacto borrados"
 
-#: vipcontacts/models.py:148 vipcontacts/models.py:336
+#: vipcontacts/models.py:148 vipcontacts/models.py:338
 msgid "Personal"
 msgstr "Personal"
 
@@ -154,35 +154,43 @@ msgstr "Hermanastro"
 msgid "Stepsister"
 msgstr "Hermanastra"
 
-#: vipcontacts/models.py:251 vipcontacts/models.py:306
+#: vipcontacts/models.py:228
+msgid "Uncle"
+msgstr "Tío"
+
+#: vipcontacts/models.py:229
+msgid "Aunt"
+msgstr "Tía"
+
+#: vipcontacts/models.py:253 vipcontacts/models.py:308
 msgid "Home"
 msgstr "Casa"
 
-#: vipcontacts/models.py:252 vipcontacts/models.py:307
-#: vipcontacts/models.py:337
+#: vipcontacts/models.py:254 vipcontacts/models.py:309
+#: vipcontacts/models.py:339
 msgid "Work"
 msgstr "Trabajo"
 
-#: vipcontacts/models.py:253
+#: vipcontacts/models.py:255
 msgid "Vacances"
 msgstr "Vacaciones"
 
-#: vipcontacts/models.py:308
+#: vipcontacts/models.py:310
 msgid "Personal mobile"
 msgstr "Móvil personal"
 
-#: vipcontacts/models.py:309
+#: vipcontacts/models.py:311
 msgid "Work mobile"
 msgstr "Móvil de trabajo"
 
-#: vipcontacts/models.py:310
+#: vipcontacts/models.py:312
 msgid "Others"
 msgstr "Otros"
 
-#: vipcontacts/models.py:311
+#: vipcontacts/models.py:313
 msgid "Work fax"
 msgstr "FAX de trabajo"
 
-#: vipcontacts/models.py:338
+#: vipcontacts/models.py:340
 msgid "Other"
 msgstr "Otro"
