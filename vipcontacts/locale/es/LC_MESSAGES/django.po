@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-19 11:57+0000\n"
+"POT-Creation-Date: 2021-04-23 01:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,135 +26,163 @@ msgstr "Hombre"
 msgid "Woman"
 msgstr "Mujer"
 
-#: vipcontacts/models.py:120
+#: vipcontacts/models.py:143
 msgid "Contact data changed"
 msgstr "Datos de contacto modificados"
 
-#: vipcontacts/models.py:121
+#: vipcontacts/models.py:144
 msgid "Contact data added"
 msgstr "Datos de contacto añadidos"
 
-#: vipcontacts/models.py:122
+#: vipcontacts/models.py:145
 msgid "Contact data deleted"
 msgstr "Datos de contacto borrados"
 
-#: vipcontacts/models.py:125 vipcontacts/models.py:306
+#: vipcontacts/models.py:148 vipcontacts/models.py:336
 msgid "Personal"
 msgstr "Personal"
 
-#: vipcontacts/models.py:177
+#: vipcontacts/models.py:200
 msgid "Wife"
 msgstr "Esposa"
 
-#: vipcontacts/models.py:178
+#: vipcontacts/models.py:201
 msgid "Husband"
 msgstr "Marido"
 
-#: vipcontacts/models.py:179
+#: vipcontacts/models.py:202
 msgid "Son"
 msgstr "Hijo"
 
-#: vipcontacts/models.py:180
+#: vipcontacts/models.py:203
 msgid "Daughter"
 msgstr "Hija"
 
-#: vipcontacts/models.py:181
+#: vipcontacts/models.py:204
 msgid "Father"
 msgstr "Padre"
 
-#: vipcontacts/models.py:182
+#: vipcontacts/models.py:205
 msgid "Mother"
 msgstr "Madre"
 
-#: vipcontacts/models.py:183
+#: vipcontacts/models.py:206
 msgid "Grandfather"
 msgstr "Abuelo"
 
-#: vipcontacts/models.py:184
+#: vipcontacts/models.py:207
 msgid "Grandmother"
 msgstr "Abuela"
 
-#: vipcontacts/models.py:185
+#: vipcontacts/models.py:208
 msgid "Grandson"
 msgstr "Nieto"
 
-#: vipcontacts/models.py:186
+#: vipcontacts/models.py:209
 msgid "Granddaughter"
 msgstr "Nieta"
 
-#: vipcontacts/models.py:187
+#: vipcontacts/models.py:210
 msgid "Friend"
 msgstr "Amigo"
 
-#: vipcontacts/models.py:188
+#: vipcontacts/models.py:211
 msgid "Boss"
 msgstr "Jefe"
 
-#: vipcontacts/models.py:189
+#: vipcontacts/models.py:212
 msgid "Subordinate"
 msgstr "Subordinado"
 
-#: vipcontacts/models.py:190
+#: vipcontacts/models.py:213
 msgid "Cousin"
 msgstr "Primo"
 
-#: vipcontacts/models.py:191
+#: vipcontacts/models.py:214
 msgid "Brother"
 msgstr "Hermano"
 
-#: vipcontacts/models.py:192
+#: vipcontacts/models.py:215
 msgid "Sister"
 msgstr "Hermana"
 
-#: vipcontacts/models.py:193
+#: vipcontacts/models.py:216
 msgid "Couple"
 msgstr "Pareja"
 
-#: vipcontacts/models.py:194
+#: vipcontacts/models.py:217
 msgid "Mother in law"
 msgstr "Suegra"
 
-#: vipcontacts/models.py:195
+#: vipcontacts/models.py:218
 msgid "Father in law"
 msgstr "Suegro"
 
-#: vipcontacts/models.py:196
+#: vipcontacts/models.py:219
 msgid "Daughter in law"
 msgstr "Nuera"
 
-#: vipcontacts/models.py:197
+#: vipcontacts/models.py:220
 msgid "Son in law"
 msgstr "Yerno"
 
-#: vipcontacts/models.py:221 vipcontacts/models.py:276
+#: vipcontacts/models.py:221
+msgid "Ex couple"
+msgstr "Ex pareja"
+
+#: vipcontacts/models.py:222
+msgid "Nephew"
+msgstr "Sobrino"
+
+#: vipcontacts/models.py:223
+msgid "Niece"
+msgstr "Sobrina"
+
+#: vipcontacts/models.py:224
+msgid "Stepfather"
+msgstr "Padrastro"
+
+#: vipcontacts/models.py:225
+msgid "Stepmother"
+msgstr "Madrastra"
+
+#: vipcontacts/models.py:226
+msgid "Stepbrother"
+msgstr "Hermanastro"
+
+#: vipcontacts/models.py:227
+msgid "Stepsister"
+msgstr "Hermanastra"
+
+#: vipcontacts/models.py:251 vipcontacts/models.py:306
 msgid "Home"
 msgstr "Casa"
 
-#: vipcontacts/models.py:222 vipcontacts/models.py:277
-#: vipcontacts/models.py:307
+#: vipcontacts/models.py:252 vipcontacts/models.py:307
+#: vipcontacts/models.py:337
 msgid "Work"
 msgstr "Trabajo"
 
-#: vipcontacts/models.py:223
+#: vipcontacts/models.py:253
 msgid "Vacances"
 msgstr "Vacaciones"
 
-#: vipcontacts/models.py:278
+#: vipcontacts/models.py:308
 msgid "Personal mobile"
 msgstr "Móvil personal"
 
-#: vipcontacts/models.py:279
+#: vipcontacts/models.py:309
 msgid "Work mobile"
 msgstr "Móvil de trabajo"
 
-#: vipcontacts/models.py:280
+#: vipcontacts/models.py:310
 msgid "Others"
 msgstr "Otros"
 
-#: vipcontacts/models.py:281
+#: vipcontacts/models.py:311
 msgid "Work fax"
 msgstr "FAX de trabajo"
 
-#: vipcontacts/models.py:308
+#: vipcontacts/models.py:338
 msgid "Other"
 msgstr "Otro"

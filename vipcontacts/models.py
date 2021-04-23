@@ -218,6 +218,13 @@ class RelationShipType(models.IntegerChoices):
     FatherInLaw=18,   _('Father in law')
     DaughterInLaw=19,   _('Daughter in law')
     SonInLaw=20,   _('Son in law')
+    ExCouple=21,  _('Ex couple')
+    Nephew=22,  _("Nephew")
+    Niece=23,  _("Niece")
+    Stepfather=24,  _("Stepfather")
+    Stepmother=25,  _("Stepmother")
+    Stepbrother=26,  _("Stepbrother")
+    Stepsister=27,  _("Stepsister")
 
 ## person type destiny
 ## M Husband N
