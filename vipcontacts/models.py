@@ -112,9 +112,9 @@ class Person(models.Model):
             s=s+add(o["organization"])
             s=s+add(o["department"])
             s=s+add(o["title"])
-        for o in x["relationship"]:
-            destiny=person_from_person_url(o["destiny"])
-            s=s+add(destiny.fullName())
+#        for o in x["relationship"]:
+#            destiny=person_from_person_url(o["destiny"])
+#            s=s+add(destiny.fullName())
             
         ## CHIPS
         chips=set()
@@ -371,6 +371,30 @@ class Search(models.Model):
     def __str__(self):
         return f"Searchs: {self.string}"
         
+class BlobMimeType(models.TextChoices):
+    png="image/png"
+    jpeg="image/jpeg"
+        
+class Blob(models.Model):
+    dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
+    dt_obsolete=models.DateTimeField(blank=False, null=True)
+    person = models.ForeignKey('Person', related_name="blob",  on_delete= models.CASCADE, blank=False, null=False)
+    blob=models.BinaryField(null=False)
+    mime=models.CharField(choices=BlobMimeType.choices, max_length=100, blank=False, null=False)
+    name=models.CharField(max_length=100, blank=False, null=False)
+    photocontact=models.BooleanField(max_length=100, null=False,  default=False)
+    class Meta:
+        managed = True
+        db_table = 'blobs'
+        
+    def __str__(self):
+        return f"Blob: {self.name}.{self.extension()}"
+
+    def extension(self):
+        if self.mime==BlobMimeType.png:
+            return "png"
+        elif self.mime==BlobMimeType.jpeg:
+            return "jpg"
 
 def person_from_person_url(s):
     arr=s.split("/")

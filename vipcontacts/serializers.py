@@ -1,4 +1,4 @@
-from vipcontacts.models import Alias, Person, Address, Group, RelationShip, Job, Log, Phone, Mail, Search
+from vipcontacts.models import Alias, Person, Address, Group, RelationShip, Job, Log, Phone, Mail, Search,  Blob
 from rest_framework import serializers
 
 class AddressSerializer(serializers.HyperlinkedModelSerializer):
@@ -154,6 +154,11 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
         updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
         updated.person.update_search_string()
         return updated
+        
+class BlobSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Blob
+        fields = ('url',  'dt_update','dt_obsolete','blob',  'mime', 'name', 'photocontact','person')
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
@@ -165,6 +170,7 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     search = SearchSerializer(many=True,  read_only=True)
     job = JobSerializer(many=True,  read_only=True)
     group = GroupSerializer(many=True,  read_only=True)
+    blob=BlobSerializer(many=True, read_only=True)
 
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -181,7 +187,7 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
         fields = ('dt_update','dt_obsolete','id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
-        'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search', 'job', 'group')
+        'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search', 'job', 'group', 'blob')
         
         
 class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):

@@ -14,6 +14,7 @@ router.register(r'api/job', views.JobViewSet)
 router.register(r'api/mail', views.MailViewSet)
 router.register(r'api/log', views.LogViewSet)
 router.register(r'api/search', views.SearchViewSet)
+router.register(r'api/blob', views.BlobViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -21,6 +22,7 @@ urlpatterns = [
     path('login/', views.login), 
     path('logout/', views.logout), 
     path('api/find/', views.person_find),
+    path('api/blobnames/', views.blob_names),
     path('api/professions/', views.professions),
     path('api/organizations/', views.organizations),
     path('api/departments/', views.departments),

@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
-from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url
-from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
+from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob
+from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
@@ -104,6 +104,10 @@ class SearchViewSet(viewsets.ModelViewSet):
     queryset = Search.objects.all()
     serializer_class = SearchSerializer
     permission_classes = [permissions.IsAuthenticated]
+class BlobViewSet(viewsets.ModelViewSet):
+    queryset = Blob.objects.all()
+    serializer_class = BlobSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class MailViewSet(viewsets.ModelViewSet):
     queryset = Mail.objects.all()
@@ -184,7 +188,6 @@ def professions(request):
         qs=Job.objects.values('profession').distinct().filter(profession__icontains=search).order_by()
 
     r=[]
-    qs=Job.objects.order_by().values('profession').distinct()
     for o in qs:
         r.append({"profession": o["profession"]})
     return JsonResponse(r, safe=False)
@@ -203,9 +206,26 @@ def organizations(request):
         qs=Job.objects.values('organization').distinct().filter(organization__icontains=search).order_by()
 
     r=[]
-    qs=Job.objects.order_by().values('organization').distinct()
     for o in qs:
         r.append({"organization": o["organization"]})
+    return JsonResponse(r, safe=False)
+    
+    
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def blob_names(request):
+    search=request.GET.get("search", "__none__")
+    if search=="__none__":
+        qs=Blob.objects.none()
+    elif search=="__all__":
+        qs=Blob.objects.values('name').distinct()
+    else:
+        qs=Blob.objects.values('name').distinct().filter(name__icontains=search).order_by()
+
+    r=[]
+    for o in qs:
+        r.append({"name": o["name"]})
     return JsonResponse(r, safe=False)
 
 @csrf_exempt    
@@ -220,7 +240,6 @@ def departments(request):
     else:
         qs=Job.objects.values('department').distinct().filter(department__icontains=search).order_by()
     r=[]
-    qs=Job.objects.order_by().values('department').distinct()
     for o in qs:
         r.append({"department": o["department"]})
     return JsonResponse(r, safe=False)
@@ -237,7 +256,6 @@ def titles(request):
     else:
         qs=Job.objects.values('title').distinct().filter(title__icontains=search).order_by()
     r=[]
-    qs=Job.objects.order_by().values('title').distinct()
     for o in qs:
         r.append({"title": o["title"]})
     return JsonResponse(r, safe=False)
