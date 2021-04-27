@@ -137,7 +137,6 @@ def login(request):
     
 @api_view(['POST'])
 def logout(request):
-    print(request.POST.get("key"))
     token=Token.objects.get(key=request.POST.get("key"))
     if token is None:
         return Response("Invalid token")
