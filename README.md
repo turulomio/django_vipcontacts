@@ -1,6 +1,6 @@
 # django_vipcontacts
 
-Django project that serves an API to VipContacts (http://github.com/turulomio/vipcontacts) to manage your contacts in a different way
+Django project that serves an API to VipContacts (https://github.com/turulomio/vipcontacts) to manage your contacts in a different way
 
 ## Links
 
@@ -30,7 +30,7 @@ Github web page:
 5) `python manage.py runserver 8002`
 6) Open http://127.0.0.1:8002/ in your browser and you'll see Vip Contacts API. You can change ports but you'll have to configure both frontend and backend CORS settings
 
-NOW YOU HAVE TO INSTALL VIPCONTACTS FROM (https:/github.com/turulomio/vipcontacts)
+NOW YOU HAVE TO INSTALL VIPCONTACTS FROM (https://github.com/turulomio/vipcontacts)
 
 ## Changelog
 
