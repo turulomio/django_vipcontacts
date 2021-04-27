@@ -1,16 +1,16 @@
 from django.core.management.base import BaseCommand
 from os import system
-from vipcontacts.__init__ import __version__, __versiondatetime__
+from vipcontacts.__init__ import __version__, __versiondatetime__ 
 
 class Command(BaseCommand):
     help = 'New release procedure'
 
     def handle(self, *args, **options):
-    
         print(f"Updating versions of vipcontacts frontend project to {__version__} and {__versiondatetime__}")
+        d=__versiondatetime__
         system (f"""sed -i '3s/.*/  "version": "{__version__}",/' ../vipcontacts/package.json""")
-        system (f"""sed -i '15s/.*/    version: "{__version__}",/' ../vipcontacts/src/main.js""")
-        system (f"""sed -i '16s/.*/    versiondate: new Date({__versiondatetime__.strftime("%Y, %m, %d, %H, %M").replace(', 0', ', ')}),/' ../vipcontacts/src/main.js""")
+        system (f"""sed -i '19s/.*/        version: "{__version__}",/' ../vipcontacts/src/main.js""")
+        system (f"""sed -i '20s/.*/        versiondate: new Date({d.year}, {d.month-1}, {d.day}, {d.hour}, {d.minute}),/' ../vipcontacts/src/main.js""")
 
         print()
         print(f"""To release a new version:
