@@ -29,7 +29,8 @@ Github web page:
 4) Clone this project and enter main directory
 5) `python manage.py migrate`
 6) `python manage.py runserver 8002`
-7) Open http://127.0.0.1:8002/ in your browser and you'll see Vip Contacts API. You can change ports but you'll have to configure both frontend and backend CORS settings
+7) `python manage.py createsuperuser`
+8) Open http://127.0.0.1:8002/ in your browser and you'll see Vip Contacts API. You can change ports but you'll have to configure both frontend and backend CORS settings
 
 NOW YOU HAVE TO INSTALL VIPCONTACTS FROM (https://github.com/turulomio/vipcontacts)
 
