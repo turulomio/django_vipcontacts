@@ -16,6 +16,10 @@ Github web page:
 * Django rest frameworkds
 * Django CORS headers
 
+## Issues
+
+If you have any issues with this project, please report then in the frontend project https://github.com/turulomio/vipcontacts/issues
+
 ## Installation
 ### Using python manage.py runserver
 
