@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-23 01:35+0000\n"
+"POT-Creation-Date: 2021-04-27 08:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -194,3 +194,35 @@ msgstr "FAX de trabajo"
 #: vipcontacts/models.py:340
 msgid "Other"
 msgstr "Otro"
+
+#: vipcontacts/views.py:289
+msgid "Contacts"
+msgstr "Contactos"
+
+#: vipcontacts/views.py:289
+msgid "Jobs"
+msgstr "Trabajos"
+
+#: vipcontacts/views.py:289
+msgid "Mails"
+msgstr "Correos"
+
+#: vipcontacts/views.py:289
+msgid "Phones"
+msgstr "Teléfonos"
+
+#: vipcontacts/views.py:289
+msgid "Relations"
+msgstr "Relaciones"
+
+#: vipcontacts/views.py:289
+msgid "Alias"
+msgstr "Apodos"
+
+#: vipcontacts/views.py:289
+msgid "Addresses"
+msgstr "Direcciones"
+
+#: vipcontacts/views.py:289
+msgid "Groups"
+msgstr "Grupos"

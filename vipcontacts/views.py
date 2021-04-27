@@ -8,6 +8,7 @@ from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, 
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
@@ -279,6 +280,16 @@ def group_members(request):
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
         
+
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def statistics(request):
+    r=[]
+    for name, cls in ((_("Contacts"), Person), (_("Jobs"), Job), (_("Mails"), Mail), (_("Phones"), Phone),  (_("Relations"), RelationShip), (_("Alias"), Alias), (_("Addresses"), Address), (_("Groups"), Group)):
+        r.append({"name": name, "value":cls.objects.all().count()})
+    return JsonResponse(r, safe=False)
+    
 
 @csrf_exempt
 @api_view(['GET', ])

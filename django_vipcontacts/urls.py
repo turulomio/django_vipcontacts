@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/groups/members/', views.group_members),
     path('api/groups/members/full/', views.group_members_full),
     path('api/titles/', views.titles),
+    path('api/statistics/', views.statistics),
     path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
 ]
 
