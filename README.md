@@ -1,5 +1,7 @@
 # django_vipcontacts
 
+Django project that serves an API to VipContacts (http://github.com/turulomio/vipcontacts) to manage your contacts in a different way
+
 ## Links
 
 Doxygen documentation:
@@ -8,27 +10,27 @@ Doxygen documentation:
 Github web page:
     https://github.com/turulomio/django_vipcontacts/
 
-Pypi web page:
-    https://pypi.org/project/xulpymoney/
-
 ## Dependencies
 
 * Django
 * Django rest frameworkds
 * Django CORS headers
 
-## How to check API
+## Installation
+### Using python manage.py runserver
 
-To check api from console:
+1) Install following packages with pip
+```
+    pip install django-cors-headers
+    pip install djangorestframework
+```
+2) Change your database settings pointing to a new database in django_vipcontacts/settings.py
+3) Create your database ( I use postgres, the rest of databases hasn't been tested )
+4) `python manage.py migrate`
+5) `python manage.py runserver 8002`
+6) Open http://127.0.0.1:8002/ in your browser and you'll see Vip Contacts API. You can change ports but you'll have to configure both frontend and backend CORS settings
 
-GET 
-
-`curl -H 'Accept: application/json; indent=4' -u user:pass http://127.0.0.1:8001/api/persons/`
-
-POST
-
-`curl -X POST -d 'username=user' -d 'password=pass' http://127.0.0.1:8001/login`
-`curl -H 'Authorization: Token 2132e2622c136bc59b6bcd732df2ca1cabadca4c'  http://192.168.1.100:8001/api/persons/`
+NOW YOU HAVE TO INSTALL VIPCONTACTS FROM (https:/github.com/turulomio/vipcontacts)
 
 ## Changelog
 
