@@ -26,9 +26,10 @@ Github web page:
 ```
 2) Change your database settings pointing to a new database in django_vipcontacts/settings.py
 3) Create your database ( I use postgres, the rest of databases hasn't been tested )
-4) `python manage.py migrate`
-5) `python manage.py runserver 8002`
-6) Open http://127.0.0.1:8002/ in your browser and you'll see Vip Contacts API. You can change ports but you'll have to configure both frontend and backend CORS settings
+4) Clone this project and enter main directory
+5) `python manage.py migrate`
+6) `python manage.py runserver 8002`
+7) Open http://127.0.0.1:8002/ in your browser and you'll see Vip Contacts API. You can change ports but you'll have to configure both frontend and backend CORS settings
 
 NOW YOU HAVE TO INSTALL VIPCONTACTS FROM (https://github.com/turulomio/vipcontacts)
 
