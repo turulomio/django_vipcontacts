@@ -161,7 +161,19 @@ class BlobSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url',  'dt_update','dt_obsolete', 'blob',  'mime', 'name', 'photocontact','person')
         
     def create(self, validated_data):
+        request = self.context.get("request")
+        if "blob" not in request.FILES:
+            print("NO HAY FICHERO")
+            return 
+        else:
+            blob = request.FILES["blob"]
+            print(blob)
+            print(blob.__class__)
+        print(dir(blob))
+        
+        validated_data['blob']=blob.read()
         print(validated_data)
+        print(request.FILES)
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         return created
     
