@@ -1,9 +1,11 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
+from django.db import transaction
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
+from vipcontacts.forms import BlobPost
 from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -344,3 +346,57 @@ def delete_group_by_name(request):
     qs_groups.delete()
     person.update_search_string()
     return Response(f"Deleted: {number}")
+    
+    
+from django.http import HttpResponse
+@csrf_exempt
+@transaction.atomic
+@api_view(['POST', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def blob_post(request):
+    form = BlobPost(request.POST)
+    if "blob" not in request.FILES:
+        return HttpResponse("You need to post a file")
+    else:
+        blob = request.FILES["blob"]
+        print(blob)
+        print(blob.__class__)
+        print(dir(blob))
+    
+    if form.is_valid():
+        print(form.cleaned_data)
+        form.cleaned_data['blob']=blob.read()
+        form.cleaned_data['person']=person_from_person_url(form.cleaned_data['person'])
+        b=Blob(**form.cleaned_data)
+        b.save()
+        return HttpResponse("Blob posted")
+    else:
+        print(form.errors)
+        return HttpResponse(form.errors)
+    
+#    
+#@csrf_exempt
+#@transaction.atomic
+#@permission_classes([permissions.IsAuthenticated, ])
+#def blob_get(request, pk):
+#    if request.method == 'POST':
+#        form = BlobPost(request.POST)
+#        if "blob" not in request.FILES:
+#            return HttpResponse("You need to post a file")
+#        else:
+#            blob = request.FILES["blob"]
+#            print(blob)
+#            print(blob.__class__)
+#            print(dir(blob))
+#        
+#        if form.is_valid():
+#            print(form.cleaned_data)
+#            form.cleaned_data['blob']=blob.read()
+#            form.cleaned_data['person']=person_from_person_url(form.cleaned_data['person'])
+#            b=Blob(**form.cleaned_data)
+#            b.save()
+#            return HttpResponse("Blob posted")
+#        else:
+#            print(form.errors)
+#            return HttpResponse(form.errors)
+#    return HttpResponse("Should be only POST")

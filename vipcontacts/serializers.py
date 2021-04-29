@@ -158,8 +158,13 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
 class BlobSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Blob
-        fields = ('url',  'dt_update','dt_obsolete','blob',  'mime', 'name', 'photocontact','person')
-
+        fields = ('url',  'dt_update','dt_obsolete', 'blob',  'mime', 'name', 'photocontact','person')
+        
+    def create(self, validated_data):
+        print(validated_data)
+        created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
+        return created
+    
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
     log=LogSerializer(many=True, read_only=True)
@@ -194,7 +199,7 @@ class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):
     search = SearchSerializer(many=True,  read_only=True)
     class Meta:
         model = Person
-        fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death',  'search')
+        fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'gender',  'search')
         
         
         
