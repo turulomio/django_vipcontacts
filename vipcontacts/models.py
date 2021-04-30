@@ -372,8 +372,9 @@ class Search(models.Model):
         return f"Searchs: {self.string}"
         
 class BlobMimeType(models.TextChoices):
-    png="image/png"
-    jpeg="image/jpeg"
+    png="image/png", "image/png"
+    jpeg="image/jpeg", "image/jpeg"
+    text="text/plain", "text/plain"
         
 class Blob(models.Model):
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)

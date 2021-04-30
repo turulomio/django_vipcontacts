@@ -163,19 +163,20 @@ class BlobSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         request = self.context.get("request")
         if "blob" not in request.FILES:
-            print("NO HAY FICHERO")
+            print("No file in request")
             return 
         else:
             blob = request.FILES["blob"]
-            print(blob)
-            print(blob.__class__)
-        print(dir(blob))
         
         validated_data['blob']=blob.read()
-        print(validated_data)
-        print(request.FILES)
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         return created
+    
+    ## Update doesn't update blob, only changes metadata
+    def update(self, instance, validated_data):
+        validated_data['blob']=instance.blob
+        updated=serializers.HyperlinkedModelSerializer.update(self, instance, validated_data)
+        return updated
     
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
     relationship = RelationShipSerializer( many=True, read_only=True)
