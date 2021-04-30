@@ -33,7 +33,5 @@ urlpatterns = [
     path('api/titles/', views.titles),
     path('api/statistics/', views.statistics),
     path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
-#    path('api/blobpost/', views.blob_post),
-#    path('api/blobget/<int:pk>/', views.blob_get),
 ]
 
