@@ -305,7 +305,7 @@ def group_members(request):
 @permission_classes([permissions.IsAuthenticated, ])
 def statistics(request):
     r=[]
-    for name, cls in ((_("Contacts"), Person), (_("Jobs"), Job), (_("Mails"), Mail), (_("Phones"), Phone),  (_("Relations"), RelationShip), (_("Alias"), Alias), (_("Addresses"), Address), (_("Groups"), Group)):
+    for name, cls in ((_("Contacts"), Person), (_("Jobs"), Job), (_("Mails"), Mail), (_("Phones"), Phone),  (_("Relations"), RelationShip), (_("Alias"), Alias), (_("Addresses"), Address), (_("Groups"), Group), (_("Media"),  Blob)):
         r.append({"name": name, "value":cls.objects.all().count()})
     return JsonResponse(r, safe=False)
     
