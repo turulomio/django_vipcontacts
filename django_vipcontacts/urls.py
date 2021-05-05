@@ -22,6 +22,7 @@ urlpatterns = [
     path('login/', views.login), 
     path('logout/', views.logout), 
     path('api/find/', views.person_find),
+    path('api/find/lasteditions/', views.person_find_last_editions),
     path('api/blobnames/', views.blob_names),
     path('api/professions/', views.professions),
     path('api/organizations/', views.organizations),

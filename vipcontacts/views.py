@@ -1,11 +1,11 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
-#from django.db import transaction
+from django.db.models import Case, When
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
-#from vipcontacts.forms import BlobPost
+from vipcontacts.reusing.connection_dj import cursor_one_column
 from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -164,6 +164,31 @@ def person_find(request):
         person_ids=[s.person.id for s in qs_search]
         qs=Person.objects.all().filter(id__in=person_ids).distinct()
 
+    serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
+    return JsonResponse(serializer.data, safe=False)
+    
+
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+def person_find_last_editions(request):
+    limit=int(request.GET.get("limit", "30"))
+    person_ids=cursor_one_column("""
+        select 
+            persons.id, 
+            max(logs.datetime) 
+        from 
+            persons, 
+            logs 
+        where 
+            persons.id=logs.person_id 
+        group by 
+            persons.id 
+        order by 
+            max(logs.datetime) desc
+        limit %s""", (limit, ))
+    preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)])
+    qs=Person.objects.all().filter(id__in=person_ids).order_by(preserved)
     serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
     return JsonResponse(serializer.data, safe=False)
     
