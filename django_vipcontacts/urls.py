@@ -34,5 +34,9 @@ urlpatterns = [
     path('api/titles/', views.titles),
     path('api/statistics/', views.statistics),
     path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
+    path('api/merge_text_fields/<str:table>/<str:field>', views.merge_text_fields),
+    
+    
+    
 ]
 

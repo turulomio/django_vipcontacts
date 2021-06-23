@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
-from vipcontacts.reusing.connection_dj import cursor_one_column
+from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
 from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -236,6 +236,10 @@ def organizations(request):
     for o in qs:
         r.append({"organization": o["organization"]})
     return JsonResponse(r, safe=False)
+
+
+
+    
     
     
 @csrf_exempt
@@ -371,6 +375,27 @@ def delete_group_by_name(request):
     qs_groups.delete()
     person.update_search_string()
     return Response(f"Deleted: {number}")
+
+
+    
+@csrf_exempt
+@api_view(['GET', ])
+@permission_classes([permissions.IsAuthenticated, ])
+## Busca cadenas distintas en table field
+## Si find necesita replace, para unir y para renombrar.
+## Si ninguno de los dos consulta un distinct
+def merge_text_fields(request, table, field):
+    find=request.GET.getlist("find", None)
+    replace=request.GET.get("replace", None)
+    
+    if find is None or replace is None:
+        rows=cursor_rows(f"select count(*), {field} as name from {table} where {field} is not null and {field}!=''  group by {field}")
+        return JsonResponse(rows, safe=False)
+    else:
+        execute(f"update {table} set {field}=%s where {field} in %s", (replace, tuple(find)))
+        return JsonResponse(True,safe=False)
+    
+
 #    
 #    
 #from django.http import HttpResponse
