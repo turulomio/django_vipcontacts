@@ -393,6 +393,11 @@ def merge_text_fields(request, table, field):
         return JsonResponse(rows, safe=False)
     else:
         execute(f"update {table} set {field}=%s where {field} in %s", (replace, tuple(find)))
+        ## Update search strings
+        ids_contacts_updated=cursor_one_column(f"select person_id from {table} where {field}=%s", (replace, ))
+        for p in Person.objects.all().filter(id__in=ids_contacts_updated):
+            p.update_search_string()
+    
         return JsonResponse(True,safe=False)
     
 
