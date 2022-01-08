@@ -311,6 +311,8 @@ class PhoneType(models.IntegerChoices):
     WorkMobile= 4, _('Work mobile')
     Others= 5, _('Others')
     FaxWork=6,  _('Work fax')
+    WorkInternalPhone=7,  _('Work internal phone')
+    WorkInternalMobile=8,  _('Work internal mobile')
     
 class Phone(models.Model):
     person = models.ForeignKey('Person', related_name="phone",  on_delete= models.CASCADE, blank=False, null=False)
