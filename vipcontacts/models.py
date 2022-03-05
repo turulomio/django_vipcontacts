@@ -98,7 +98,8 @@ class Person(models.Model):
         for o in x["mail"]:
             s=s+add(o["mail"])
         for o in x["phone"]:
-            s=s+add(o["phone"])
+            s=s+add(o["phone"]) #+34 655 65 65 65
+            s=s+add(o["phone"].replace(" ", "")) #+346556565
         for o in x["address"]:
             s=s+add(o["address"])
             s=s+add(o["city"])
