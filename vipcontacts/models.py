@@ -46,7 +46,12 @@ class PersonGender(models.IntegerChoices):
     Man = 0, _('Man')
     Woman = 1, _('Woman')
 
-    
+    @classmethod
+    def get_label(cls, n):
+        for id, name in PersonGender.choices:
+            if id==n:
+                return name
+        return None
 
 # Create your models here.
 class Person(models.Model):

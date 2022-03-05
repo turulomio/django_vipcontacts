@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
-from vipcontacts.models import Person, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob
+from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -333,9 +333,30 @@ def group_members(request):
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def statistics(request):
-    r=[]
+    r={}
+    r["registers"]=[]
     for name, cls in ((_("Contacts"), Person), (_("Jobs"), Job), (_("Mails"), Mail), (_("Phones"), Phone),  (_("Relations"), RelationShip), (_("Alias"), Alias), (_("Addresses"), Address), (_("Groups"), Group), (_("Media"),  Blob)):
-        r.append({"name": name, "value":cls.objects.all().count()})
+        r["registers"].append({"name": name, "value":cls.objects.all().count()})
+        
+    r["gender"]=[]
+    for row in cursor_rows("select count(*) as value, gender from persons group by gender"):
+        r["gender"].append({"name": PersonGender.get_label(row['gender']), "value":row["value"]})     
+        
+    r["jobs"]=[]
+    for row in cursor_rows("select count(*) as value, profession as name from jobs group by profession"):
+        if not ( row["name"] is None or row["name"]==""):
+            r["jobs"].append(row)
+            
+    r["countries"]=[]
+    for row in cursor_rows("select count(*) as value, country as name from addresses group by country"):
+        r["countries"].append(row)
+
+    r["cities"]=[]
+    for row in cursor_rows("select count(*) as value, city as name from addresses group by city"):
+        if not ( row["name"] is None or row["name"]==""):
+            r["cities"].append(row)
+
+
     return JsonResponse(r, safe=False)
     
 
