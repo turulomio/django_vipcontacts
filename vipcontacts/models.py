@@ -7,6 +7,10 @@ from pycountry import countries
 LIST_COUNTRIES=[]
 for  country in countries:
     LIST_COUNTRIES.append((country.alpha_2, country.name))
+    
+    
+def get_country_name(code):
+    return countries.get(alpha_2=code).name
 
 def create_log(object,  fields, dt_update=None, person=None):
     dt_update=object.dt_update if dt_update is None else dt_update

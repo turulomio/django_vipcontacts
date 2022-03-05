@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
-from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob
+from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -349,7 +349,8 @@ def statistics(request):
             
     r["countries"]=[]
     for row in cursor_rows("select count(*) as value, country as name from addresses group by country"):
-        r["countries"].append(row)
+
+        r["countries"].append({"name": get_country_name(row['name']), "value":row["value"]})     
 
     r["cities"]=[]
     for row in cursor_rows("select count(*) as value, city as name from addresses group by city"):
