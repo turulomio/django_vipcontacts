@@ -4,3 +4,4 @@ dist/
 django_vipcontacts/presettings.py
 doc/html
 *__pycache__*
+.jedi

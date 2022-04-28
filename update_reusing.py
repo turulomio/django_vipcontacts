@@ -19,6 +19,7 @@ if args.local==False:
     download_from_github("turulomio", "reusingcode", "python/casts.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/currency.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/datetime_functions.py", "vipcontacts/reusing")
+    download_from_github("turulomio", "reusingcode", "python/listdict_functions.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/percentage.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/github.py", "vipcontacts/reusing")
     download_from_github("turulomio", "django_moneymoney", "moneymoney/request_casting.py", "vipcontacts/reusing")
@@ -27,3 +28,4 @@ if args.local==False:
 replace_in_file("vipcontacts/reusing/casts.py", "from currency", "from .currency")
 replace_in_file("vipcontacts/reusing/casts.py", "from percentage", "from .percentage")
 replace_in_file("vipcontacts/reusing/request_casting.py", ".reusing", "")
+replace_in_file("vipcontacts/reusing/listdict_functions.py", "casts", ".casts")

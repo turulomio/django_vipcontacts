@@ -1,12 +1,13 @@
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
-from django.db.models import Case, When
+from django.db.models import Case, When, Max
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
-from vipcontacts.reusing.request_casting import RequestString, all_args_are_not_none, RequestGetString
+from vipcontacts.reusing.listdict_functions import listdict_order_by, listdict2list
+from vipcontacts.reusing.request_casting import RequestString, all_args_are_not_none, RequestGetString, RequestGetInteger
 from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -91,8 +92,11 @@ class PersonViewSet(viewsets.ModelViewSet):
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
     
+    ## ?search=
+    ## ?last_editions=40
     def get_queryset(self):
         search=RequestGetString(self.request,"search")
+        last_editions=RequestGetInteger(self.request,"last_editions")
         if all_args_are_not_none(search):
             if search.lower()=="__none__":
                 return self.queryset.none()
@@ -102,11 +106,18 @@ class PersonViewSet(viewsets.ModelViewSet):
                 qs_search=Search.objects.all().filter(string__icontains=search.lower())
                 person_ids=[s.person.id for s in qs_search]
                 return self.queryset.filter(id__in=person_ids).distinct()
+        elif all_args_are_not_none(last_editions):
+            ld=(Log.objects
+                .values('person_id')
+                .annotate(Max('datetime'))
+                .order_by()
+            )
+            ld=listdict_order_by(ld, "datetime__max", True)
+            person_ids=listdict2list(ld, "person_id")
+            preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)]) #Preserves ids order
+            return self.queryset.filter(id__in=person_ids).order_by(preserved)
         return self.queryset
     
-    
-    
-
 class PhoneViewSet(viewsets.ModelViewSet):
     queryset = Phone.objects.all()
     serializer_class = PhoneSerializer
