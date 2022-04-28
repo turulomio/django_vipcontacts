@@ -88,7 +88,7 @@ class RelationShipViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.all()
+    queryset = Person.objects.prefetch_related("mail").prefetch_related("phone").prefetch_related("search").prefetch_related("alias").prefetch_related("job").prefetch_related("group").prefetch_related("blob").prefetch_related("address").prefetch_related("relationship").all()
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -103,7 +103,7 @@ class PersonViewSet(viewsets.ModelViewSet):
             elif search.lower()=="__all__":
                 return self.queryset
             else:
-                qs_search=Search.objects.all().filter(string__icontains=search.lower())
+                qs_search=Search.objects.select_related("person").all().filter(string__icontains=search.lower())
                 person_ids=[s.person.id for s in qs_search]
                 return self.queryset.filter(id__in=person_ids).distinct()
         elif all_args_are_not_none(last_editions):

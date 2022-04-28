@@ -158,7 +158,7 @@ class LogType(models.IntegerChoices):
     Personal=100, _("Personal")
 
 class Log(models.Model):
-    person = models.ForeignKey('Person', related_name="log", on_delete= models.CASCADE, blank=False, null=False)
+    person = models.ForeignKey('Person', related_name="log_person", on_delete= models.CASCADE, blank=False, null=False)
     datetime=models.DateTimeField(blank=False, null=False, default=timezone.now)
     retypes=models.IntegerField(choices=LogType.choices, blank=False,  null=False)
     text=models.TextField(blank=False, null=True)
