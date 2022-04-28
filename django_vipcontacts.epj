@@ -1,8 +1,8 @@
 {
   "header": {
     "comment": "eric project file for project django_vipcontacts",
-    "copyright": "Copyright (C) 2021 , ",
-    "saved": "2021-04-29, 14:52:04"
+    "copyright": "Copyright (C) 2022 , ",
+    "saved": "2022-04-28, 22:16:04"
   },
   "project": {
     "AUTHOR": "",
@@ -106,7 +106,16 @@
       "vipcontacts/migrations/0006_alter_relationship_retypes.py",
       "vipcontacts/migrations/0008_auto_20210427_1635.py",
       "vipcontacts/migrations/0007_blob.py",
-      "vipcontacts/forms.py"
+      "vipcontacts/forms.py",
+      "vipcontacts/reusing/casts.py",
+      "vipcontacts/reusing/currency.py",
+      "vipcontacts/reusing/percentage.py",
+      "vipcontacts/reusing/github.py",
+      "vipcontacts/reusing/datetime_functions.py",
+      "vipcontacts/reusing/request_casting.py",
+      "vipcontacts/reusing/connection_dj.py",
+      "update_reusing.py",
+      "vipcontacts/reusing/listdict_functions.py"
     ],
     "SPELLEXCLUDES": "",
     "SPELLLANGUAGE": "",
