@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
+from vipcontacts.reusing.request_casting import RequestString, all_args_are_not_none
 from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -125,21 +126,28 @@ class MailViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def login(request):
-    try:
-        user=User.objects.get(username=request.POST.get("username"))
-    except User.DoesNotExist:
-        return Response("Invalid user")
-        
-    password=request.POST.get("password")
-    pwd_valid=check_password(password, user.password)
-    if not pwd_valid:
-        return Response("Wrong password")
+    username=RequestString(request, "username")
+    password=RequestString(request, "password")
+    
+    print(username, password)
+    if all_args_are_not_none(username, password):
+        try:
+            user=User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response("Invalid user")
+            
+        print(username, password)
+        pwd_valid=check_password(password, user.password)
+        if not pwd_valid:
+            return Response("Wrong password")
 
-    if Token.objects.filter(user=user).exists():#Lo borra
-        token=Token.objects.get(user=user)
-        token.delete()
-    token=Token.objects.create(user=user)
-    return Response(token.key)
+        if Token.objects.filter(user=user).exists():#Lo borra
+            token=Token.objects.get(user=user)
+            token.delete()
+        token=Token.objects.create(user=user)
+        return Response(token.key)
+    else:
+        return Response(_("Bad credentials"))
     
 @api_view(['POST'])
 def logout(request):

@@ -18,9 +18,12 @@ if args.local==False:
     download_from_github("turulomio", "reusingcode", "django/connection_dj.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/casts.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/currency.py", "vipcontacts/reusing")
+    download_from_github("turulomio", "reusingcode", "python/datetime_functions.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/percentage.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/github.py", "vipcontacts/reusing")
+    download_from_github("turulomio", "django_moneymoney", "moneymoney/request_casting.py", "vipcontacts/reusing")
 
 
 replace_in_file("vipcontacts/reusing/casts.py", "from currency", "from .currency")
 replace_in_file("vipcontacts/reusing/casts.py", "from percentage", "from .percentage")
+replace_in_file("vipcontacts/reusing/request_casting.py", ".reusing", "")

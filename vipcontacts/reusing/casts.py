@@ -7,6 +7,16 @@ from logging import warning
 from .currency import Currency
 from .percentage import Percentage
 
+
+from inspect import currentframe
+
+## Converts a string in a f-string
+## Used to translate f-strings due to a gettext limitation for this ones
+## Example f(_("Hello {name}"))
+def f(s):
+    frame = currentframe().f_back
+    return eval(f'f"""{s}"""', frame.f_locals, frame.f_globals)
+
 def valueORempty(v):
     return "" if v is None else v
 
@@ -272,6 +282,10 @@ def var2json(var):
         return str(var)
     elif var.__class__.__name__=="bool":
         return dumps(var)
+    elif var.__class__.__name__=="Percentage":
+        return dumps(var2json(var.value))
+    elif var.__class__.__name__=="Currency":
+        return dumps(var2json(var.amount))
     elif var is None:
         return dumps(var)
     return var
@@ -306,7 +320,10 @@ if __name__ == "__main__":
 
     d=Decimal("12.3")
     json_d=var2json(d)
-    print (d, json_d)
+    print (d, json_d, json_d.__class__)
     d=None
+    json_d=var2json(d)
+    print (d, json_d, json_d.__class__)
+    d=True
     json_d=var2json(d)
     print (d, json_d, json_d.__class__)
