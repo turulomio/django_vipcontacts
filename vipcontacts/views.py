@@ -129,14 +129,12 @@ def login(request):
     username=RequestString(request, "username")
     password=RequestString(request, "password")
     
-    print(username, password)
     if all_args_are_not_none(username, password):
         try:
             user=User.objects.get(username=username)
         except User.DoesNotExist:
             return Response("Invalid user")
             
-        print(username, password)
         pwd_valid=check_password(password, user.password)
         if not pwd_valid:
             return Response("Wrong password")
