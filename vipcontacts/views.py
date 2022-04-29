@@ -88,7 +88,7 @@ class RelationShipViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.prefetch_related("mail").prefetch_related("phone").prefetch_related("search").prefetch_related("alias").prefetch_related("job").prefetch_related("group").prefetch_related("blob").prefetch_related("address").prefetch_related("relationship").all()
+    queryset = Person.objects.prefetch_related("mail").prefetch_related("phone").prefetch_related("search").prefetch_related("alias").prefetch_related("job").prefetch_related("group").prefetch_related("blob").prefetch_related("address").prefetch_related("relationship").prefetch_related("log").all()
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -178,32 +178,6 @@ def logout(request):
         token.delete()
         return Response("Logged out")
 
-
-
-@csrf_exempt
-@api_view(['GET', ])
-@permission_classes([permissions.IsAuthenticated, ])
-def person_find_last_editions(request):
-    limit=int(request.GET.get("limit", "30"))
-    person_ids=cursor_one_column("""
-        select 
-            persons.id, 
-            max(logs.datetime) 
-        from 
-            persons, 
-            logs 
-        where 
-            persons.id=logs.person_id 
-        group by 
-            persons.id 
-        order by 
-            max(logs.datetime) desc
-        limit %s""", (limit, ))
-    preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)])
-    qs=Person.objects.all().filter(id__in=person_ids).order_by(preserved)
-    serializer = PersonSerializerSearch(qs, many=True, context={'request': request} )
-    return JsonResponse(serializer.data, safe=False)
-    
 @csrf_exempt
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
