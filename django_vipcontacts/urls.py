@@ -2,25 +2,26 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from vipcontacts import views
+from vipcontacts.reusing import views_login
 
 router = routers.DefaultRouter()
-router.register(r'api/persons', views.PersonViewSet)
-router.register(r'api/alias', views.AliasViewSet)
-router.register(r'api/address', views.AddressViewSet)
-router.register(r'api/relationship', views.RelationShipViewSet)
-router.register(r'api/phone', views.PhoneViewSet)
-router.register(r'api/group', views.GroupViewSet)
-router.register(r'api/job', views.JobViewSet)
-router.register(r'api/mail', views.MailViewSet)
-router.register(r'api/log', views.LogViewSet)
-router.register(r'api/search', views.SearchViewSet)
-router.register(r'api/blob', views.BlobViewSet)
+router.register(r'persons', views.PersonViewSet)
+router.register(r'alias', views.AliasViewSet)
+router.register(r'address', views.AddressViewSet)
+router.register(r'relationship', views.RelationShipViewSet)
+router.register(r'phone', views.PhoneViewSet)
+router.register(r'group', views.GroupViewSet)
+router.register(r'job', views.JobViewSet)
+router.register(r'mail', views.MailViewSet)
+router.register(r'log', views.LogViewSet)
+router.register(r'search', views.SearchViewSet)
+router.register(r'blob', views.BlobViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
-    path('login/', views.login), 
-    path('logout/', views.logout), 
+    path('api/', include(router.urls)),
+    path('login/', views_login.login), 
+    path('logout/', views_login.logout), 
     path('api/blobnames/', views.blob_names),
     path('api/professions/', views.professions),
     path('api/organizations/', views.organizations),

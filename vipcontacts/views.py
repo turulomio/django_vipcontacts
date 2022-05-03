@@ -1,13 +1,10 @@
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth.models import User
 from django.db.models import Case, When, Max
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
 from vipcontacts.reusing.listdict_functions import listdict2list
-from vipcontacts.reusing.request_casting import RequestString, all_args_are_not_none, RequestGetString, RequestGetInteger
+from vipcontacts.reusing.request_casting import all_args_are_not_none, RequestGetString, RequestGetInteger
 from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -145,38 +142,6 @@ class MailViewSet(viewsets.ModelViewSet):
         instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-@api_view(['POST'])
-def login(request):
-    username=RequestString(request, "username")
-    password=RequestString(request, "password")
-    
-    if all_args_are_not_none(username, password):
-        try:
-            user=User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response("Invalid user")
-            
-        pwd_valid=check_password(password, user.password)
-        if not pwd_valid:
-            return Response("Wrong password")
-
-        if Token.objects.filter(user=user).exists():#Lo borra
-            token=Token.objects.get(user=user)
-            token.delete()
-        token=Token.objects.create(user=user)
-        return Response(token.key)
-    else:
-        return Response(_("Bad credentials"))
-    
-@api_view(['POST'])
-def logout(request):
-    token=Token.objects.get(key=request.POST.get("key"))
-    if token is None:
-        return Response("Invalid token")
-    else:
-        token.delete()
-        return Response("Logged out")
 
 @csrf_exempt
 @api_view(['GET', ])
