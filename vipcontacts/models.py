@@ -153,6 +153,7 @@ class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact data changed')
     ContactValueAdded = 1, _('Contact data added')
     ContactValueDeleted = 2, _('Contact data deleted')
+    ContactMerge = 3, _('Contact merge')
     
     #Automatic are <100
     Personal=100, _("Personal")

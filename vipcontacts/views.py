@@ -1,15 +1,17 @@
+from django.db import transaction
 from django.db.models import Case, When, Max
+from django.http import JsonResponse
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
 from vipcontacts.reusing.listdict_functions import listdict2list
-from vipcontacts.reusing.request_casting import all_args_are_not_none, RequestGetString, RequestGetInteger
-from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name
+from vipcontacts.reusing.request_casting import all_args_are_not_none, RequestGetString, RequestGetInteger, RequestUrl
+from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name, LogType
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
@@ -372,6 +374,37 @@ def merge_text_fields(request, table, field):
             p.update_search_string()
     
         return JsonResponse(True,safe=False)
+    
+
+
+@csrf_exempt
+@api_view(['POST'])    
+@permission_classes([permissions.IsAuthenticated, ])
+@transaction.atomic
+def PersonsMerge(request):
+    person_from=RequestUrl(request, "from", Person)
+    person_to=RequestUrl(request, "to", Person)
+    
+    if all_args_are_not_none(person_from, person_to):
+        Address.objects.filter(person=person_from).update(person=person_to)
+        Alias.objects.filter(person=person_from).update(person=person_to)
+        Blob.objects.filter(person=person_from).update(person=person_to)
+        Group.objects.filter(person=person_from).update(person=person_to)
+        Job.objects.filter(person=person_from).update(person=person_to)
+        Log.objects.filter(person=person_from).update(person=person_to)
+        Mail.objects.filter(person=person_from).update(person=person_to)
+        Phone.objects.filter(person=person_from).update(person=person_to)
+        RelationShip.objects.filter(person=person_from).update(person=person_to)
+        person_to.update_search_string(request)
+        
+        person_from.delete()
+        l=Log(datetime=timezone.now(), person=person_to, retypes=LogType.ContactMerge, text=f"{person_from} => {person_to}")
+        l.save()    
+        return JsonResponse(True,safe=False)
+    
+
+    return JsonResponse(False,safe=False)
+    
     
 
 #    
