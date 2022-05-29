@@ -2,7 +2,7 @@
   "header": {
     "comment": "eric project file for project django_vipcontacts",
     "copyright": "Copyright (C) 2022 , ",
-    "saved": "2022-05-03, 20:41:01"
+    "saved": "2022-05-29, 10:07:32"
   },
   "project": {
     "AUTHOR": "",
@@ -107,11 +107,9 @@
       "vipcontacts/models.py",
       "vipcontacts/reusing/casts.py",
       "vipcontacts/reusing/connection_dj.py",
-      "vipcontacts/reusing/currency.py",
       "vipcontacts/reusing/datetime_functions.py",
       "vipcontacts/reusing/github.py",
       "vipcontacts/reusing/listdict_functions.py",
-      "vipcontacts/reusing/percentage.py",
       "vipcontacts/reusing/request_casting.py",
       "vipcontacts/reusing/views_login.py",
       "vipcontacts/serializers.py",
