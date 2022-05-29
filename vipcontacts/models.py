@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
@@ -148,6 +149,40 @@ class Person(models.Model):
         Search.objects.filter(person=self).delete()
         search=Search( person=self, string=s,  chips=list(chips))
         search.save()
+        
+    def contact_last_update(self):
+        r=self.dt_update
+        if self.dt_update>r:
+            r=self.dt_update
+        for o in self.address.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        for o in self.alias.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        for o in self.blob.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        for o in self.group.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        for o in self.job.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        for o in self.log.all():
+            if o.datetime>r:
+                r=o.datetime
+        for o in self.mail.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        for o in self.phone.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        for o in self.relationship.all():
+            if o.dt_update>r:
+                r=o.dt_update
+        return r
+
 
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact data changed')

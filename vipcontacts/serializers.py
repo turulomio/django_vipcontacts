@@ -190,6 +190,7 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     group = GroupSerializer(many=True,  read_only=True)
     blob=BlobSerializer(many=True, read_only=True)
     fullname = serializers.SerializerMethodField()
+    contact_last_update = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -206,10 +207,14 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
         fields = ('dt_update','dt_obsolete','id','url', 'name', 'surname', 'surname2',  'birth', 'death', 'gender', 
-        'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search', 'job', 'group', 'blob', 'fullname')
+        'log', 'alias', 'address', 'relationship', 'phone', 'mail', 'search', 'job', 'group', 'blob', 'fullname', 
+        'contact_last_update')
         
     def get_fullname(self, o):
         return o.fullName()
+        
+    def get_contact_last_update(self, o):
+        return o.contact_last_update()
         
         
 class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):
