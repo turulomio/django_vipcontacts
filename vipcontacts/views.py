@@ -3,7 +3,6 @@ from django.db.models import Case, When, Max
 from django.http import JsonResponse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
@@ -145,7 +144,7 @@ class MailViewSet(viewsets.ModelViewSet):
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@csrf_exempt
+
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def person_get_relationship_fullnames(request, person_id):
@@ -155,7 +154,7 @@ def person_get_relationship_fullnames(request, person_id):
         r.append({"id": o.destiny.id, "name":o.destiny.fullName()})
     return JsonResponse(r, safe=False)
     
-@csrf_exempt
+
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def professions(request):    
@@ -173,7 +172,7 @@ def professions(request):
     return JsonResponse(r, safe=False)
     
     
-@csrf_exempt
+
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def organizations(request):
@@ -195,7 +194,7 @@ def organizations(request):
     
     
     
-@csrf_exempt
+
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def blob_names(request):
@@ -212,7 +211,7 @@ def blob_names(request):
         r.append({"name": o["name"]})
     return JsonResponse(r, safe=False)
 
-@csrf_exempt    
+    
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def departments(request):    
@@ -228,7 +227,7 @@ def departments(request):
         r.append({"department": o["department"]})
     return JsonResponse(r, safe=False)
 
-@csrf_exempt    
+    
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def titles(request):
@@ -244,7 +243,7 @@ def titles(request):
         r.append({"title": o["title"]})
     return JsonResponse(r, safe=False)
     
-@csrf_exempt    
+    
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def groups(request):
@@ -262,7 +261,7 @@ def groups(request):
     
     
 
-@csrf_exempt
+
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def group_members(request):
@@ -282,7 +281,6 @@ def group_members(request):
     return JsonResponse(serializer.data, safe=False)
         
 
-@csrf_exempt
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def statistics(request):
@@ -314,7 +312,7 @@ def statistics(request):
     return JsonResponse(r, safe=False)
     
 
-@csrf_exempt
+
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def group_members_full(request):
@@ -335,7 +333,7 @@ def group_members_full(request):
     
     
 ## Needs url and name get parameters
-@csrf_exempt
+
 @api_view(['DELETE', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def delete_group_by_name(request):
@@ -353,7 +351,7 @@ def delete_group_by_name(request):
 
 
     
-@csrf_exempt
+
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
 ## Busca cadenas distintas en table field
@@ -377,7 +375,7 @@ def merge_text_fields(request, table, field):
     
 
 
-@csrf_exempt
+
 @api_view(['POST'])    
 @permission_classes([permissions.IsAuthenticated, ])
 @transaction.atomic
@@ -410,7 +408,7 @@ def PersonsMerge(request):
 #    
 #    
 #from django.http import HttpResponse
-#@csrf_exempt
+#
 #@transaction.atomic
 #@api_view(['POST', ])
 #@permission_classes([permissions.IsAuthenticated, ])
@@ -436,7 +434,7 @@ def PersonsMerge(request):
 #        return HttpResponse(form.errors)
     
 #    
-#@csrf_exempt
+#
 #@transaction.atomic
 #@permission_classes([permissions.IsAuthenticated, ])
 #def blob_get(request, pk):
