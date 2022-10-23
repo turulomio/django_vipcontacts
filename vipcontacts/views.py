@@ -432,16 +432,19 @@ def NextImportantDates(request):
 
     
     qs=Person.objects.filter(birth__month=date.today().month, birth__day=date.today().day)
-    append(r, qs, _("Birthday"),  "birth")
-    
-    qs=Person.objects.filter(birth__month=12, birth__day=29)
-    append(r, qs, _("My Birthday"),  "birth")
-    
+    append(r, qs, _("Birthdays"),  "birth")
+        
     qs=Person.objects.filter(birth__month=(date.today()+timedelta(days=1)).month, birth__day=(date.today()+timedelta(days=1)).day)
-    append(r, qs, _("Tomorrow's birthday"),  "birth")
+    append(r, qs, _("Tomorrow's birthdays"),  "birth")
     
     qs=Person.objects.filter(birth__month=(date.today()+timedelta(days=2)).month, birth__day=(date.today()+timedelta(days=2)).day)
-    append(r, qs, _("Day after Tomorrow's birthday"),  "birth")
+    append(r, qs, _("Day after Tomorrow's birthdays"),  "birth")
+    
+    for i in range(3, 31):
+        qs=Person.objects.filter(birth__month=(date.today()+timedelta(days=i)).month, birth__day=(date.today()+timedelta(days=i)).day)
+        append(r, qs, _("Next 30 day's birthdays"),  "birth")
+        
+    
     
     qs=Person.objects.filter(death__month=date.today().month, death__day=date.today().day)
     append(r, qs, _("Death"),  "death")
