@@ -35,6 +35,9 @@ urlpatterns = [
     path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
     path('api/merge_text_fields/<str:table>/<str:field>', views.merge_text_fields),
     path('persons/merge/', views.PersonsMerge), 
+    path('next_important_dates/', views.NextImportantDates), 
+    
+    
     
     
     

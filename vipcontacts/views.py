@@ -1,16 +1,23 @@
+from datetime import date, timedelta
 from django.db import transaction
 from django.db.models import Case, When, Max
 from django.http import JsonResponse
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
-from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute
+from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute, show_queries
+from vipcontacts.reusing.decorators import ptimeit
+from vipcontacts.reusing.responses_json import json_data_response
 from vipcontacts.reusing.listdict_functions import listdict2list
 from vipcontacts.reusing.request_casting import all_args_are_not_none, RequestGetString, RequestGetInteger, RequestUrl
 from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name, LogType
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
+
+show_queries
+ptimeit
 
 class AddressViewSet(viewsets.ModelViewSet):
     queryset = Address.objects.all()
@@ -403,59 +410,41 @@ def PersonsMerge(request):
 
     return JsonResponse(False,safe=False)
     
-    
 
-#    
-#    
-#from django.http import HttpResponse
-#
-#@transaction.atomic
-#@api_view(['POST', ])
-#@permission_classes([permissions.IsAuthenticated, ])
-#def blob_post(request):
-#    form = BlobPost(request.POST)
-#    if "blob" not in request.FILES:
-#        return HttpResponse("You need to post a file")
-#    else:
-#        blob = request.FILES["blob"]
-#        print(blob)
-#        print(blob.__class__)
-#        print(dir(blob))
-#    
-#    if form.is_valid():
-#        print(form.cleaned_data)
-#        form.cleaned_data['blob']=blob.read()
-#        form.cleaned_data['person']=person_from_person_url(form.cleaned_data['person'])
-#        b=Blob(**form.cleaned_data)
-#        b.save()
-#        return HttpResponse("Blob posted")
-#    else:
-#        print(form.errors)
-#        return HttpResponse(form.errors)
+@ptimeit
+@show_queries
+@api_view(['GET'])    
+@permission_classes([permissions.IsAuthenticated, ])
+def NextImportantDates(request):
+    ## Appends a qs of persons with a reason
+    def append(r, qs, reason, attribute):
+        
+        for p in qs:
+            r.append({
+                "person": p.fullName(), 
+                "id": p.id, 
+                "url": request.build_absolute_uri(reverse('person-detail', args=(p.pk, ))), 
+                "reason": reason, 
+                "date": getattr(p, attribute), 
+            })
+    ###
+    r=[]
+
     
-#    
-#
-#@transaction.atomic
-#@permission_classes([permissions.IsAuthenticated, ])
-#def blob_get(request, pk):
-#    if request.method == 'POST':
-#        form = BlobPost(request.POST)
-#        if "blob" not in request.FILES:
-#            return HttpResponse("You need to post a file")
-#        else:
-#            blob = request.FILES["blob"]
-#            print(blob)
-#            print(blob.__class__)
-#            print(dir(blob))
-#        
-#        if form.is_valid():
-#            print(form.cleaned_data)
-#            form.cleaned_data['blob']=blob.read()
-#            form.cleaned_data['person']=person_from_person_url(form.cleaned_data['person'])
-#            b=Blob(**form.cleaned_data)
-#            b.save()
-#            return HttpResponse("Blob posted")
-#        else:
-#            print(form.errors)
-#            return HttpResponse(form.errors)
-#    return HttpResponse("Should be only POST")
+    qs=Person.objects.filter(birth__month=date.today().month, birth__day=date.today().day)
+    append(r, qs, _("Birthday"),  "birth")
+    
+    qs=Person.objects.filter(birth__month=12, birth__day=29)
+    append(r, qs, _("My Birthday"),  "birth")
+    
+    qs=Person.objects.filter(birth__month=(date.today()+timedelta(days=1)).month, birth__day=(date.today()+timedelta(days=1)).day)
+    append(r, qs, _("Tomorrow's birthday"),  "birth")
+    
+    qs=Person.objects.filter(birth__month=(date.today()+timedelta(days=2)).month, birth__day=(date.today()+timedelta(days=2)).day)
+    append(r, qs, _("Day after Tomorrow's birthday"),  "birth")
+    
+    qs=Person.objects.filter(death__month=date.today().month, death__day=date.today().day)
+    append(r, qs, _("Death"),  "death")
+
+    
+    return json_data_response(True, r, _("Dates correctly obtained"))

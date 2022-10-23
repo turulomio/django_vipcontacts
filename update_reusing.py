@@ -17,12 +17,12 @@ args=parser.parse_args()
 if args.local==False:
     download_from_github("turulomio", "reusingcode", "django/connection_dj.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/casts.py", "vipcontacts/reusing")
-    #download_from_github("turulomio", "reusingcode", "python/currency.py", "vipcontacts/reusing")
+    download_from_github("turulomio", "reusingcode", "python/decorators.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/datetime_functions.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/listdict_functions.py", "vipcontacts/reusing")
-    #download_from_github("turulomio", "reusingcode", "python/percentage.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "python/github.py", "vipcontacts/reusing")
     download_from_github("turulomio", "reusingcode", "django/request_casting.py", "vipcontacts/reusing")
+    download_from_github("turulomio", "reusingcode", "django/responses_json.py", "vipcontacts/reusing")
     download_from_github("turulomio", "django_moneymoney", "moneymoney/views_login.py", "vipcontacts/reusing")
 
 
