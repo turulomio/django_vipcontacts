@@ -1,5 +1,6 @@
 from vipcontacts.models import Alias, Person, Address, Group, RelationShip, Job, Log, Phone, Mail, Search,  Blob
 from rest_framework import serializers
+from base64 import b64decode
 
 class AddressSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -162,13 +163,8 @@ class BlobSerializer(serializers.HyperlinkedModelSerializer):
         
     def create(self, validated_data):
         request = self.context.get("request")
-        if "blob" not in request.FILES:
-            print("No file in request")
-            return 
-        else:
-            blob = request.FILES["blob"]
-        
-        validated_data['blob']=blob.read()
+        ## Converts base 64 string to  bytes
+        validated_data['blob']=b64decode(request.data['blob'].encode('utf-8'))
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
         return created
     
