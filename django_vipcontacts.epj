@@ -1,8 +1,8 @@
 {
   "header": {
     "comment": "eric project file for project django_vipcontacts",
-    "copyright": "Copyright (C) 2022 , ",
-    "saved": "2022-10-23, 20:15:03"
+    "copyright": "Copyright (C) 2023 , ",
+    "saved": "2023-02-13, 14:19:07"
   },
   "project": {
     "AUTHOR": "",
@@ -109,9 +109,11 @@
       "vipcontacts/reusing/casts.py",
       "vipcontacts/reusing/connection_dj.py",
       "vipcontacts/reusing/datetime_functions.py",
+      "vipcontacts/reusing/decorators.py",
       "vipcontacts/reusing/github.py",
       "vipcontacts/reusing/listdict_functions.py",
       "vipcontacts/reusing/request_casting.py",
+      "vipcontacts/reusing/responses_json.py",
       "vipcontacts/reusing/views_login.py",
       "vipcontacts/serializers.py",
       "vipcontacts/tests.py",
@@ -126,6 +128,7 @@
     "TRANSLATIONPATTERN": "",
     "TRANSLATIONS": [],
     "TRANSLATIONSBINPATH": "",
+    "TRANSLATIONSOURCESTARTPATH": "",
     "UICPARAMS": {
       "Package": "",
       "PackagesRoot": "",
