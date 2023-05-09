@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "django-vipcontacts"
+version = "0.3.0"
+description = "A different way to manage personal contacts"
+authors = ["turulomio <turulomio@yahoo.es>"]
+license = "GPL-3.0 license"
+readme = "README.md"
+packages = [{include = "django_vipcontacts"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Django = "^4.2.1"
+djangorestframework = "^3.14.0"
+django-cors-headers = "^3.14.0"
+pycountry = "^22.3.5"
+vobject = "^0.9.6.1"
+psycopg = "^3.1.9"
+drf-spectacular = "^0.26.2"
+
+[tool.poetry.group.dev.dependencies]
+poetry = "^1.4.2"
+poethepoet = "^0.20.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
