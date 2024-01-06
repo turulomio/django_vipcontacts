@@ -1,4 +1,4 @@
-
+from datetime import date
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
@@ -72,6 +72,19 @@ class Person(models.Model):
     class Meta:
         managed = True
         db_table = 'persons'
+        
+    @staticmethod
+    def post_payload(name="Turulomio", surname="García",  surname2="Pérez", birth=date.today(), death=None, gender=1):
+        return {
+            "name":  name,
+            "surname":surname, 
+            "surname2":surname2, 
+            "birth":birth, 
+            "death":death, 
+            "gender":gender, 
+          
+        }
+        
         
     def fullName(self):
         return f"{str(self.name)} {str(self.surname)} {str(self.surname2)}"

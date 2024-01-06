@@ -4,6 +4,7 @@ from django.utils import timezone
 from json import loads
 from vipcontacts.reusing import tests_helpers
 from vipcontacts import models
+from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 tag
@@ -48,13 +49,13 @@ class CtTestCase(APITestCase):
         cls.client_authorized_1=APIClient()
         cls.client_authorized_1.credentials(HTTP_AUTHORIZATION='Token ' + cls.token_user_authorized_1)
         cls.client_authorized_1.user=cls.user_authorized_1
-
-        cls.client_authorized_2=APIClient()
-        cls.client_authorized_2.credentials(HTTP_AUTHORIZATION='Token ' + cls.token_user_authorized_2)
-        cls.client_authorized_2.user=cls.user_authorized_2
         
         cls.client_anonymous=APIClient()
         cls.client_anonymous.user=None
 
         cls.now=timezone.now()
 
+                
+    def test_person(self):
+        dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/persons/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
+        print(dict_person)
