@@ -5,14 +5,13 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
+from pydicts import lod
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute, show_queries
 from vipcontacts.reusing.decorators import ptimeit
-from vipcontacts.reusing.responses_json import json_data_response
-from vipcontacts.reusing.listdict_functions import listdict2list
-from vipcontacts.reusing.request_casting import all_args_are_not_none, RequestGetString, RequestGetInteger, RequestUrl
+from request_casting.request_casting import all_args_are_not_none, RequestString, RequestInteger, RequestUrl
 from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name, LogType
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 
@@ -100,8 +99,8 @@ class PersonViewSet(viewsets.ModelViewSet):
     ## ?search=                 To search a string
     ## ?last_editions=40    To get persons with 40 last editions
     def get_queryset(self):
-        search=RequestGetString(self.request,"search")
-        last_editions=RequestGetInteger(self.request,"last_editions")
+        search=RequestString(self.request,"search")
+        last_editions=RequestInteger(self.request,"last_editions")
         if all_args_are_not_none(search):
             if search.lower()=="__none__":
                 return self.queryset.none()
@@ -113,7 +112,7 @@ class PersonViewSet(viewsets.ModelViewSet):
                 return self.queryset.filter(id__in=person_ids).distinct()
         elif all_args_are_not_none(last_editions):
             ld=Log.objects.values('person_id').annotate(max=Max('datetime')).order_by("-max")[:30]
-            person_ids=listdict2list(ld, "person_id")
+            person_ids=lod.lod2list(ld, "person_id")
             preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)]) #Preserves ids order
             return self.queryset.filter(id__in=person_ids).order_by(preserved)
         return self.queryset
@@ -450,4 +449,4 @@ def NextImportantDates(request):
     append(r, qs, _("Death"),  "death")
 
     
-    return json_data_response(True, r, _("Dates correctly obtained"))
+    return Response(r, _("Dates correctly obtained"))
