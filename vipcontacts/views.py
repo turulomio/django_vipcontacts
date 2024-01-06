@@ -98,24 +98,25 @@ class PersonViewSet(viewsets.ModelViewSet):
     
     ## ?search=                 To search a string
     ## ?last_editions=40    To get persons with 40 last editions
-    def get_queryset(self):
+    def list(self, request):
         search=RequestString(self.request,"search")
         last_editions=RequestInteger(self.request,"last_editions")
         if all_args_are_not_none(search):
             if search.lower()=="__none__":
-                return self.queryset.none()
+                self.queryset=self.queryset.none()
             elif search.lower()=="__all__":
-                return self.queryset
+                self.queryset=self.queryset
             else:
                 qs_search=Search.objects.select_related("person").all().filter(string__icontains=search.lower())
                 person_ids=[s.person.id for s in qs_search]
-                return self.queryset.filter(id__in=person_ids).distinct()
+                self.queryset=self.queryset.filter(id__in=person_ids).distinct()
         elif all_args_are_not_none(last_editions):
             ld=Log.objects.values('person_id').annotate(max=Max('datetime')).order_by("-max")[:30]
             person_ids=lod.lod2list(ld, "person_id")
             preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)]) #Preserves ids order
-            return self.queryset.filter(id__in=person_ids).order_by(preserved)
-        return self.queryset
+            self.queryset=self.queryset.filter(id__in=person_ids).order_by(preserved)
+        serializer = PersonSerializer(self.queryset, many=True, context={'request': request})
+        return Response(serializer.data)
     
 class PhoneViewSet(viewsets.ModelViewSet):
     queryset = Phone.objects.all()
