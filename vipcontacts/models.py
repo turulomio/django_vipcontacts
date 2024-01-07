@@ -254,6 +254,12 @@ class Group(models.Model):
         managed = True
         db_table = 'groups'
         
+    @staticmethod
+    def post_payload(person, name="Group for person"):
+        return {
+            "person":  person,
+            "name":name, 
+        }
     def create_log( self, new):
         create_log(new, ['name', ])
 

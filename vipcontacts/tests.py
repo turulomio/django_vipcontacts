@@ -75,3 +75,8 @@ class CtTestCase(APITestCase):
         dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/alias/", models.Alias.post_payload(person=dict_person["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
 
+                
+    def test_group(self):
+        dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
+        tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/group/", models.Group.post_payload(person=dict_person["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
+
