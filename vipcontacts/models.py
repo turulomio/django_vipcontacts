@@ -211,12 +211,25 @@ class Log(models.Model):
     datetime=models.DateTimeField(blank=False, null=False, default=timezone.now)
     retypes=models.IntegerField(choices=LogType.choices, blank=False,  null=False)
     text=models.TextField(blank=False, null=True)
+    
+
+    
     class Meta:
         managed = True
         db_table = 'logs'
+        
     def __str__(self):
         return f"Log: {self.text} #{self.id}"
-
+    
+    @staticmethod
+    def post_payload(person, datetime_=timezone.now(),  retypes=1, text="This is a log"):
+        return {
+            "person":  person,
+            "datetime":datetime_,
+            "retypes":retypes, 
+            "text":text, 
+        }
+        
 class Alias(models.Model):
     person = models.ForeignKey('Person', related_name="alias",  on_delete=models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
@@ -378,7 +391,17 @@ class Job(models.Model):
     class Meta:
         managed = True
         db_table = 'jobs'
-
+        
+    @staticmethod
+    def post_payload(person, organization="Person organization", profession="Person profession",  title="Person title",  department="Person department"):
+        return {
+            "person":  person,
+            "organization":organization, 
+            "profession":profession, 
+            "title":title, 
+            "department":department, 
+        }
+        
     def create_log( self, new):
         create_log(new, ['organization', 'profession', 'title', 'department'])
 

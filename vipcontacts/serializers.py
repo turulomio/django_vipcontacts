@@ -107,7 +107,7 @@ class JobSerializer(serializers.HyperlinkedModelSerializer):
 class LogSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Log
-        fields = ('url', 'datetime','retypes',  'text',   'person')
+        fields = ('url',  'id', 'datetime','retypes',  'text',   'person')
 
     
     def create(self, validated_data):

@@ -80,3 +80,13 @@ class CtTestCase(APITestCase):
         dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/group/", models.Group.post_payload(person=dict_person["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
 
+                
+    def test_job(self):
+        dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
+        tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/job/", models.Group.post_payload(person=dict_person["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
+                
+    def test_log(self):
+        dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
+        dict_log=tests_helpers.client_post(self, self.client_authorized_1, "/api/log/", models.Log.post_payload(person=dict_person["url"]), status.HTTP_201_CREATED) #Removes one share
+        tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/log/", models.Log.post_payload(person=dict_person["url"]), dict_log["id"], post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
+
