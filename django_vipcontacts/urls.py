@@ -5,7 +5,7 @@ from vipcontacts import views
 from vipcontacts.reusing import views_login
 
 router = routers.DefaultRouter()
-router.register(r'persons', views.PersonViewSet)
+router.register(r'person', views.PersonViewSet)
 router.register(r'alias', views.AliasViewSet)
 router.register(r'address', views.AddressViewSet)
 router.register(r'relationship', views.RelationShipViewSet)

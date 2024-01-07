@@ -57,9 +57,15 @@ class CtTestCase(APITestCase):
 
                 
     def test_person(self):
-        tests_helpers.client_post(self, self.client_authorized_1, "/api/persons/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
-        tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/persons/", models.Person.post_payload(), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
-        dict_person_search=tests_helpers.client_get(self, self.client_authorized_1,  "/api/persons/?search=turu", status.HTTP_200_OK)
+        tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
+        tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/person/", models.Person.post_payload(), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
+        dict_person_search=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?search=turu", status.HTTP_200_OK)
         self.assertEqual(len(dict_person_search), 1 )        
-        dict_person_last_editions=tests_helpers.client_get(self, self.client_authorized_1,  "/api/persons/?last_editions=1", status.HTTP_200_OK)
+        dict_person_last_editions=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?last_editions=1", status.HTTP_200_OK)
         self.assertEqual(len(dict_person_last_editions), 1 )
+
+                
+    def test_address(self):
+        dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
+        tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/address/", models.Address.post_payload(person=dict_person["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
+

@@ -337,6 +337,19 @@ class Address(models.Model):
 
     def delete_log( self):
         delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
+            
+    @staticmethod
+    def post_payload(person, retypes=1, address="Home", code="28001",  city="Home town",  country="ES"):
+        return {
+            "person":  person,
+            "retypes":retypes, 
+            "address":address, 
+            "code":code, 
+            "city":city, 
+            "country":country, 
+          
+        }
+        
     
 class Job(models.Model):
     person = models.ForeignKey('Person',related_name="job",  on_delete= models.CASCADE, blank=False, null=False)
