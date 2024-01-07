@@ -26,6 +26,6 @@ class Command(BaseCommand):
         #Generate fixtures
                 
     def handle(self, *args, **options):
-        system("coverage run --omit=vipcontacts/reusing/*.py,vipcontacts/migrations/*.py,manage.py manage.py test --settings django_vipcontacts.settings ; coverage html")
+        system("coverage run --omit=vipcontacts/reusing/*.py,vipcontacts/migrations/*.py,manage.py manage.py test --settings django_vipcontacts.settings ; coverage report; coverage html")
         print("Now you can open htmlcov/index.html")
     

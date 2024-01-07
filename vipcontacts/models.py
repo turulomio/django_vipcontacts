@@ -225,7 +225,15 @@ class Alias(models.Model):
     class Meta:
         managed = True
         db_table = 'alias'
+
+    @staticmethod
+    def post_payload(person, name="Alias for person"):
+        return {
+            "person":  person,
+            "name":name, 
+        }
         
+
     def create_log( self, new):
         create_log(new, ['name', ])
 
@@ -234,6 +242,8 @@ class Alias(models.Model):
 
     def delete_log( self):
         delete_log(self, ['dt_update', 'dt_obsolete', 'name', ])
+        
+        
     
 class Group(models.Model):
     person = models.ForeignKey('Person', related_name="group",  on_delete=models.CASCADE, blank=False, null=False)
