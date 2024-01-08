@@ -26,6 +26,6 @@ def reusing():
 
 def cypress_test_server():
     print("- Dropping test_xulpymoney database...")
-    system("dropdb -U postgres -h 127.0.0.1 test_xulpymoney")
+    system("dropdb -U postgres -h 127.0.0.1 test_vipcontacts")
     print("- Launching python manage.py test_server with user 'test' and password 'test'")
-    system("python manage.py testserver moneymoney/fixtures/all.json moneymoney/fixtures/test_server.json --addrport 8004")
+    system("python manage.py testserver vipcontacts/fixtures/test_server.json --addrport 8002")

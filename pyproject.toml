@@ -30,3 +30,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poe.tasks]
 reusing = { script = "vipcontacts.poethepoet:reusing" }
+cypress_test_server = { script = "vipcontacts.poethepoet:cypress_test_server" }
