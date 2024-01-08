@@ -450,4 +450,4 @@ def NextImportantDates(request):
     append(r, qs, _("Death"),  "death")
 
     
-    return Response(r, _("Dates correctly obtained"))
+    return Response(r, status.HTTP_200_OK)
