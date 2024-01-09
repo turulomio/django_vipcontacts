@@ -56,7 +56,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class MailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Mail
-        fields = ('mail',  'dt_update',  'dt_obsolete', 'retypes','person', 'url')
+        fields = ('id','mail',  'dt_update',  'dt_obsolete', 'retypes','person', 'url')
 
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -73,7 +73,7 @@ class MailSerializer(serializers.HyperlinkedModelSerializer):
 class PhoneSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Phone
-        fields = ('url', 'phone',  'dt_update',  'dt_obsolete', 'retypes','person')
+        fields = ('id','url', 'phone',  'dt_update',  'dt_obsolete', 'retypes','person')
 
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -90,7 +90,7 @@ class PhoneSerializer(serializers.HyperlinkedModelSerializer):
 class JobSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Job
-        fields = ('url', 'dt_update', 'dt_obsolete', 'organization', 'profession', 'title', 'department', 'person')
+        fields = ('id','url', 'dt_update', 'dt_obsolete', 'organization', 'profession', 'title', 'department', 'person')
     
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -125,7 +125,7 @@ class LogSerializer(serializers.HyperlinkedModelSerializer):
 class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RelationShip
-        fields = ('url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny')
+        fields = ('id','url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny')
     
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -142,7 +142,7 @@ class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
 class SearchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Search
-        fields = ('url',  'string',  'chips','person')
+        fields = ('id','url',  'string',  'chips','person')
 
     def create(self, validated_data):
         created=serializers.HyperlinkedModelSerializer.create(self,  validated_data)
@@ -159,7 +159,7 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
 class BlobSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Blob
-        fields = ('url',  'dt_update','dt_obsolete', 'blob',  'mime', 'name', 'photocontact','person')
+        fields = ('id','url',  'dt_update','dt_obsolete', 'blob',  'mime', 'name', 'photocontact','person')
         
     def create(self, validated_data):
         request = self.context.get("request")
