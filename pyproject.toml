@@ -8,19 +8,26 @@ readme = "README.md"
 packages = [{include = "django_vipcontacts"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-Django = "^4.2.1"
-djangorestframework = "^3.14.0"
-django-cors-headers = "^3.14.0"
-pycountry = "^22.3.5"
-vobject = "^0.9.6.1"
-psycopg = "^3.1.9"
-drf-spectacular = "^0.26.2"
+python = ">=3.11,<4.0"
+Django = ">=5.0.0"
+djangorestframework = ">=3.14.0"
+django-cors-headers = ">=4.3.0"
+pycountry = ">=22.3.5"
+vobject = ">=0.9.6.1"
+psycopg = ">=3.1.9"
+drf-spectacular = ">=0.26.2"
+pydicts = ">=0.11.0"
+request-casting = ">=0.6.0"
 
 [tool.poetry.group.dev.dependencies]
-poetry = "^1.4.2"
-poethepoet = "^0.20.0"
+poetry = ">=1.4.2"
+poethepoet = ">=0.20.0"
+coverage = "^7.4.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+reusing = { script = "vipcontacts.poethepoet:reusing" }
+cypress_test_server = { script = "vipcontacts.poethepoet:cypress_test_server" }

@@ -5,7 +5,7 @@ from vipcontacts import views
 from vipcontacts.reusing import views_login
 
 router = routers.DefaultRouter()
-router.register(r'persons', views.PersonViewSet)
+router.register(r'person', views.PersonViewSet)
 router.register(r'alias', views.AliasViewSet)
 router.register(r'address', views.AddressViewSet)
 router.register(r'relationship', views.RelationShipViewSet)
@@ -32,8 +32,8 @@ urlpatterns = [
     path('api/groups/members/full/', views.group_members_full),
     path('api/titles/', views.titles),
     path('api/statistics/', views.statistics),
-    path('api/find/relationship/<int:person_id>', views.person_get_relationship_fullnames),
-    path('api/merge_text_fields/<str:table>/<str:field>', views.merge_text_fields),
+    path('api/find/relationship/<int:person_id>/', views.person_get_relationship_fullnames),
+    path('api/merge_text_fields/<str:table>/<str:field>/', views.merge_text_fields),
     path('persons/merge/', views.PersonsMerge), 
     path('next_important_dates/', views.NextImportantDates), 
     

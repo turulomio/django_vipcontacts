@@ -1,4 +1,4 @@
-
+from datetime import date
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
@@ -72,6 +72,19 @@ class Person(models.Model):
     class Meta:
         managed = True
         db_table = 'persons'
+        
+    @staticmethod
+    def post_payload(name="Turulomio", surname="García",  surname2="Pérez", birth=date.today(), death=None, gender=1):
+        return {
+            "name":  name,
+            "surname":surname, 
+            "surname2":surname2, 
+            "birth":birth, 
+            "death":death, 
+            "gender":gender, 
+          
+        }
+        
         
     def fullName(self):
         return f"{str(self.name)} {str(self.surname)} {str(self.surname2)}"
@@ -198,12 +211,25 @@ class Log(models.Model):
     datetime=models.DateTimeField(blank=False, null=False, default=timezone.now)
     retypes=models.IntegerField(choices=LogType.choices, blank=False,  null=False)
     text=models.TextField(blank=False, null=True)
+    
+
+    
     class Meta:
         managed = True
         db_table = 'logs'
+        
     def __str__(self):
         return f"Log: {self.text} #{self.id}"
-
+    
+    @staticmethod
+    def post_payload(person, datetime_=timezone.now(),  retypes=1, text="This is a log"):
+        return {
+            "person":  person,
+            "datetime":datetime_,
+            "retypes":retypes, 
+            "text":text, 
+        }
+        
 class Alias(models.Model):
     person = models.ForeignKey('Person', related_name="alias",  on_delete=models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
@@ -212,7 +238,15 @@ class Alias(models.Model):
     class Meta:
         managed = True
         db_table = 'alias'
+
+    @staticmethod
+    def post_payload(person, name="Alias for person"):
+        return {
+            "person":  person,
+            "name":name, 
+        }
         
+
     def create_log( self, new):
         create_log(new, ['name', ])
 
@@ -221,6 +255,8 @@ class Alias(models.Model):
 
     def delete_log( self):
         delete_log(self, ['dt_update', 'dt_obsolete', 'name', ])
+        
+        
     
 class Group(models.Model):
     person = models.ForeignKey('Person', related_name="group",  on_delete=models.CASCADE, blank=False, null=False)
@@ -231,6 +267,12 @@ class Group(models.Model):
         managed = True
         db_table = 'groups'
         
+    @staticmethod
+    def post_payload(person, name="Group for person"):
+        return {
+            "person":  person,
+            "name":name, 
+        }
     def create_log( self, new):
         create_log(new, ['name', ])
 
@@ -324,6 +366,19 @@ class Address(models.Model):
 
     def delete_log( self):
         delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
+            
+    @staticmethod
+    def post_payload(person, retypes=1, address="Home", code="28001",  city="Home town",  country="ES"):
+        return {
+            "person":  person,
+            "retypes":retypes, 
+            "address":address, 
+            "code":code, 
+            "city":city, 
+            "country":country, 
+          
+        }
+        
     
 class Job(models.Model):
     person = models.ForeignKey('Person',related_name="job",  on_delete= models.CASCADE, blank=False, null=False)
@@ -336,7 +391,17 @@ class Job(models.Model):
     class Meta:
         managed = True
         db_table = 'jobs'
-
+        
+    @staticmethod
+    def post_payload(person, organization="Person organization", profession="Person profession",  title="Person title",  department="Person department"):
+        return {
+            "person":  person,
+            "organization":organization, 
+            "profession":profession, 
+            "title":title, 
+            "department":department, 
+        }
+        
     def create_log( self, new):
         create_log(new, ['organization', 'profession', 'title', 'department'])
 
