@@ -315,6 +315,7 @@ class RelationShipType(models.IntegerChoices):
     Stepsister=27,  _("Stepsister")
     Uncle=28,  _("Uncle")
     Aunt=29,  _("Aunt")
+    Secretary=30,  _("Secretary")
 
 ## person type destiny
 ## M Husband N
