@@ -97,24 +97,31 @@ class PersonViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     ## ?search=                 To search a string
-    ## ?last_editions=40    To get persons with 40 last editions
+    
     def list(self, request):
+        """
+            :LAST 40        Shows last edited records
+        """
         search=RequestString(self.request,"search")
         last_editions=RequestInteger(self.request,"last_editions")
         if all_args_are_not_none(search):
             if search.lower()=="__none__":
                 self.queryset=self.queryset.none()
+            elif search.startswith(":LAST "):
+                try:
+                    last_editions=int(search.split(" ")[1])
+                except:
+                    last_editions=40
+                ld=Log.objects.values('person_id').annotate(max=Max('datetime')).order_by("-max")[:last_editions]
+                person_ids=lod.lod2list(ld, "person_id")
+                preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)]) #Preserves ids order
+                self.queryset=self.queryset.filter(id__in=person_ids).order_by(preserved)
             elif search.lower()=="__all__":
                 self.queryset=self.queryset
             else:
                 qs_search=Search.objects.select_related("person").all().filter(string__icontains=search.lower())
                 person_ids=[s.person.id for s in qs_search]
                 self.queryset=self.queryset.filter(id__in=person_ids).distinct()
-        elif all_args_are_not_none(last_editions):
-            ld=Log.objects.values('person_id').annotate(max=Max('datetime')).order_by("-max")[:30]
-            person_ids=lod.lod2list(ld, "person_id")
-            preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)]) #Preserves ids order
-            self.queryset=self.queryset.filter(id__in=person_ids).order_by(preserved)
         serializer = PersonSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
     
