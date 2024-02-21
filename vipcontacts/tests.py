@@ -55,7 +55,7 @@ class CtTestCase(APITestCase):
 
         cls.now=timezone.now()
 
-                
+    @tag("current")
     def test_person(self):
         tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/person/", models.Person.post_payload(), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
