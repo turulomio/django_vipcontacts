@@ -61,7 +61,8 @@ class CtTestCase(APITestCase):
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/person/", models.Person.post_payload(), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
         dict_person_search=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?search=turu", status.HTTP_200_OK)
         self.assertEqual(len(dict_person_search), 1 )        
-        dict_person_last_editions=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?last_editions=1", status.HTTP_200_OK)
+        dict_person_last_editions=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?search=:LAST 30", status.HTTP_200_OK)
+        print(dict_person_last_editions)
         self.assertEqual(len(dict_person_last_editions), 1 )
 
                 

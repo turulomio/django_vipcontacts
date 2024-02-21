@@ -1,5 +1,5 @@
 from datetime import date
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 from pycountry import countries
@@ -86,6 +86,11 @@ class Person(models.Model):
         }
         
         
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+
     def fullName(self):
         return f"{str(self.name)} {str(self.surname)} {str(self.surname2)}"
         
@@ -163,40 +168,6 @@ class Person(models.Model):
         search=Search( person=self, string=s,  chips=list(chips))
         search.save()
         
-    def contact_last_update(self):
-        r=self.dt_update
-        if self.dt_update>r:
-            r=self.dt_update
-        for o in self.address.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.alias.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.blob.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.group.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.job.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.log.all():
-            if o.datetime>r:
-                r=o.datetime
-        for o in self.mail.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.phone.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.relationship.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        return r
-
-
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact data changed')
     ContactValueAdded = 1, _('Contact data added')
@@ -238,6 +209,12 @@ class Alias(models.Model):
     class Meta:
         managed = True
         db_table = 'alias'
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
 
     @staticmethod
     def post_payload(person, name="Alias for person"):
@@ -267,6 +244,13 @@ class Group(models.Model):
         managed = True
         db_table = 'groups'
         
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
+
     @staticmethod
     def post_payload(person, name="Group for person"):
         return {
@@ -329,6 +313,13 @@ class RelationShip(models.Model):
         managed = True
         db_table = 'relationship'
         
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
+
     def create_log( self, new):
         create_log(new, ['retypes', 'destiny' ])
 
@@ -358,6 +349,13 @@ class Address(models.Model):
 
     def __str__(self):
         return f"Address: {self.address}, {self.code} {self.city}, {self.country} #{self.id}"
+        
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
 
     def create_log( self, new):
         create_log(new, ['retypes', 'address', 'code', 'city', 'country'])
@@ -392,6 +390,14 @@ class Job(models.Model):
     class Meta:
         managed = True
         db_table = 'jobs'
+        
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
         
     @staticmethod
     def post_payload(person, organization="Person organization", profession="Person profession",  title="Person title",  department="Person department"):
@@ -436,6 +442,12 @@ class Phone(models.Model):
         managed = True
         db_table = 'phones'
 
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
     def __str__(self):
         return f"Phone: {self.phone} #{self.id}"
 
@@ -462,6 +474,14 @@ class Mail(models.Model):
     class Meta:
         managed = True
         db_table = 'mails'
+
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
 
     def create_log( self, new):
         create_log(new, ['retypes', 'mail' ])
@@ -502,6 +522,13 @@ class Blob(models.Model):
         managed = True
         db_table = 'blobs'
         
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Blob: {self.name}.{self.extension()}"
 

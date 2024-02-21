@@ -1,17 +1,15 @@
 from datetime import date, timedelta
 from django.db import transaction
-from django.db.models import Case, When, Max
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
-from pydicts import lod
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute, show_queries
 from vipcontacts.reusing.decorators import ptimeit
-from request_casting.request_casting import all_args_are_not_none, RequestString, RequestInteger, RequestUrl
+from request_casting.request_casting import all_args_are_not_none, RequestString, RequestUrl
 from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name, LogType
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 
@@ -103,7 +101,6 @@ class PersonViewSet(viewsets.ModelViewSet):
             :LAST 40        Shows last edited records
         """
         search=RequestString(self.request,"search")
-        last_editions=RequestInteger(self.request,"last_editions")
         if all_args_are_not_none(search):
             if search.lower()=="__none__":
                 self.queryset=self.queryset.none()
@@ -112,10 +109,7 @@ class PersonViewSet(viewsets.ModelViewSet):
                     last_editions=int(search.split(" ")[1])
                 except:
                     last_editions=40
-                ld=Log.objects.values('person_id').annotate(max=Max('datetime')).order_by("-max")[:last_editions]
-                person_ids=lod.lod2list(ld, "person_id")
-                preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(person_ids)]) #Preserves ids order
-                self.queryset=self.queryset.filter(id__in=person_ids).order_by(preserved)
+                self.queryset=self.queryset.order_by("-dt_update")[:last_editions]
             elif search.lower()=="__all__":
                 self.queryset=self.queryset
             else:
