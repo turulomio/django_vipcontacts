@@ -62,6 +62,11 @@ class CtTestCase(APITestCase):
         self.assertEqual(len(dict_person_search), 1 )        
         dict_person_last_editions=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?search=:LAST 30", status.HTTP_200_OK)
         self.assertEqual(len(dict_person_last_editions), 1 )
+        
+        #Action historical_report
+        tests_helpers.client_get(self, self.client_authorized_1,  f"{dict_person_last_editions[0]['url']}", status.HTTP_200_OK)
+
+
 
     def test_address(self):
         dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
@@ -87,7 +92,16 @@ class CtTestCase(APITestCase):
         alias=models.Alias(name="Turulomio", person=person)
         alias.save()
         
-        models.Person.lod_changes(person.id, console=True)
+        address=models.Address(address="Home", retypes=1,  person=person)
+        address.save()
+        
+        mail=models.Mail(mail="turulomio@yahoo.es", retypes=1,  person=person)
+        mail.save()
+        
+        phone=models.Phone(phone="+34999999999", retypes=1,  person=person)
+        phone.save()
+        
+        models.Person.historical_register(person.id, console=False)
     
     
     def test_job(self):
