@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from django.db import transaction
+from django.db.models import Subquery
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
@@ -113,9 +114,8 @@ class PersonViewSet(viewsets.ModelViewSet):
             elif search.lower()=="__all__":
                 self.queryset=self.queryset
             else:
-                qs_search=Search.objects.select_related("person").all().filter(string__icontains=search.lower())
-                person_ids=[s.person.id for s in qs_search]
-                self.queryset=self.queryset.filter(id__in=person_ids).distinct()
+                qs_search=Search.objects.select_related("person").filter(string__icontains=search.lower())
+                self.queryset=self.queryset.filter(id__in=Subquery(qs_search.values("person__id")))
         serializer = PersonSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
     

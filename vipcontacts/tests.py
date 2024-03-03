@@ -62,7 +62,6 @@ class CtTestCase(APITestCase):
         dict_person_search=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?search=turu", status.HTTP_200_OK)
         self.assertEqual(len(dict_person_search), 1 )        
         dict_person_last_editions=tests_helpers.client_get(self, self.client_authorized_1,  "/api/person/?search=:LAST 30", status.HTTP_200_OK)
-        print(dict_person_last_editions)
         self.assertEqual(len(dict_person_last_editions), 1 )
 
                 
