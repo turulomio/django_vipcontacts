@@ -5,15 +5,16 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
-from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute, show_queries
+from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute, show_queries, show_queries_function
 from vipcontacts.reusing.decorators import ptimeit
 from request_casting.request_casting import all_args_are_not_none, RequestString, RequestUrl
 from vipcontacts.models import Person, PersonGender, Alias, Address,  RelationShip, Job, Log, Phone, Mail, Search, Group, person_from_person_url, Blob, get_country_name, LogType
 from vipcontacts.serializers import PersonSerializer, AliasSerializer, AddressSerializer, RelationShipSerializer, JobSerializer, GroupSerializer, LogSerializer, PhoneSerializer, MailSerializer, PersonSerializerSearch, SearchSerializer,  BlobSerializer
 
+show_queries_function
 show_queries
 ptimeit
 
@@ -113,6 +114,13 @@ class PersonViewSet(viewsets.ModelViewSet):
                 self.queryset=self.queryset.filter(id__in=Subquery(qs_search.values("person__id")))
         serializer = PersonSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
+        
+    @action(detail=True, methods=["get"], name='Returns historical register', url_path="historical_register", url_name='historical_register', permission_classes=[permissions.IsAuthenticated])
+    def historical_register(self, request, pk=None):
+        person= self.get_object()
+        r=Person.historical_register(person.id)
+        return Response(r)
+        
     
 class PhoneViewSet(viewsets.ModelViewSet):
     queryset = Phone.objects.all()
@@ -189,12 +197,6 @@ def organizations(request):
     for o in qs:
         r.append({"organization": o["organization"]})
     return JsonResponse(r, safe=False)
-
-
-
-    
-    
-    
 
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
@@ -404,9 +406,6 @@ def PersonsMerge(request):
 
     return JsonResponse(False,safe=False)
     
-
-@ptimeit
-@show_queries
 @api_view(['GET'])    
 @permission_classes([permissions.IsAuthenticated, ])
 def NextImportantDates(request):

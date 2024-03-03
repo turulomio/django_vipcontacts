@@ -128,7 +128,7 @@ class Person(models.Model):
         search.save()
         
     @staticmethod
-    def lod_changes(id, console=False):
+    def historical_register(id, console=False):
         """
             Return a list of dictionaries with all person changes
             
@@ -146,8 +146,8 @@ class Person(models.Model):
                     d["id"]=new.id
                     d["field"]=field.name
                     d["old"]=None
-                    d["new"]=getattr(new, field.name)
-                    d["user"]=new.history_user
+                    d["new"]=str(getattr(new, field.name))
+                    d["user"]=new.history_user.username if new.history_user else ""
                     d["type"]="+"
                     r.append(d)
             else:
@@ -158,64 +158,64 @@ class Person(models.Model):
                     d["model"]=new.__class__.__name__
                     d["id"]=new.id
                     d["field"]=change.field
-                    d["old"]=change.old
-                    d["new"]=change.new
-                    d["user"]=new.history_user
+                    d["old"]=str(change.old)
+                    d["new"]=str(change.new)
+                    d["user"]=new.history_user.username if new.history_user else ""
                     d["type"]=new.history_type
                     r.append(d)
             return r
         #############################################        
         r={"diff": []}
         #Person
-        histories_person=Person.history.filter(id=id).order_by("history_date")
+        histories_person=Person.history.filter(id=id).order_by("history_date").select_related("history_user")
         r["person"]=list(histories_person.values())
         for i in range(len(r["person"])):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_person[i-1], histories_person[i])
             
         #Alias
-        histories_alias=Alias.history.filter(person__id=id).order_by("history_date")
+        histories_alias=Alias.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["alias"]=list(histories_alias.values())
         for i in range(len(histories_alias)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_alias[i-1], histories_alias[i])
             
         #Group
-        histories_group=Group.history.filter(person__id=id).order_by("history_date")
+        histories_group=Group.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["group"]=list(histories_group.values())
         for i in range(len(histories_group)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_group[i-1], histories_group[i])
 
         #Address
-        histories_address=Address.history.filter(person__id=id).order_by("history_date")
+        histories_address=Address.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["address"]=list(histories_address.values())
         for i in range(len(histories_address)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_address[i-1], histories_address[i])
                 
         #Mail
-        histories_mail=Mail.history.filter(person__id=id).order_by("history_date")
+        histories_mail=Mail.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["mail"]=list(histories_mail.values())
         for i in range(len(histories_mail)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_mail[i-1], histories_mail[i])
             
         #Phone
-        histories_phone=Phone.history.filter(person__id=id).order_by("history_date")
+        histories_phone=Phone.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["phone"]=list(histories_phone.values())
         for i in range(len(histories_phone)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_phone[i-1], histories_phone[i])
             
         #RelationShip
-        histories_relationship=RelationShip.history.filter(person__id=id).order_by("history_date")
+        histories_relationship=RelationShip.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["relationship"]=list(histories_relationship.values())
         for i in range(len(histories_relationship)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_relationship[i-1], histories_relationship[i])
 
         #Job
-        histories_job=Job.history.filter(person__id=id).order_by("history_date")
+        histories_job=Job.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["job"]=list(histories_job.values())
         for i in range(len(histories_job)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_job[i-1], histories_job[i])
                 
         #Log
-        histories_log=Log.history.filter(person__id=id).order_by("history_date")
+        histories_log=Log.history.filter(person__id=id).order_by("history_date").select_related("person",  "history_user")
         r["log"]=list(histories_log.values())
         for i in range(len(histories_log)):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_log[i-1], histories_log[i])

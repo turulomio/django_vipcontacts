@@ -2,7 +2,7 @@
   "header": {
     "comment": "eric project file for project django_vipcontacts",
     "copyright": "Copyright (C) 2024 , ",
-    "saved": "2024-02-03, 11:26:10"
+    "saved": "2024-03-03, 11:45:55"
   },
   "project": {
     "AUTHOR": "",
@@ -85,6 +85,7 @@
       "vipcontacts/__init__.py",
       "vipcontacts/admin.py",
       "vipcontacts/apps.py",
+      "vipcontacts/commons.py",
       "vipcontacts/hardcoded_strings.py",
       "vipcontacts/management/commands/apache_installation.py",
       "vipcontacts/management/commands/coverage.py",
