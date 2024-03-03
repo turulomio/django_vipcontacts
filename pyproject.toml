@@ -21,6 +21,7 @@ request-casting = ">=0.6.0"
 coverage = ">=7.4.3"
 poethepoet = ">=0.25.0"
 poetry = ">=1.8.2"
+django-simple-history = "^3.5.0"
 
 [tool.poetry.group.dev.dependencies]
 poetry = ">=1.4.2"

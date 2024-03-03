@@ -25,7 +25,6 @@ class AddressViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -37,7 +36,6 @@ class AliasViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -49,7 +47,6 @@ class GroupViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -63,7 +60,6 @@ class JobViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -86,7 +82,6 @@ class RelationShipViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -127,7 +122,6 @@ class PhoneViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -148,7 +142,6 @@ class MailViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        instance.delete_log()
         instance.person.update_search_string()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
