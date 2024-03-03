@@ -83,7 +83,11 @@ class CtTestCase(APITestCase):
         person.save()
         person.surname="Turu2"
         person.save()
-        person.lod_changes(console=True)
+        
+        alias=models.Alias(name="Turulomio", person=person)
+        alias.save()
+        
+        models.Person.lod_changes(person.id, console=True)
     
     
     def test_job(self):

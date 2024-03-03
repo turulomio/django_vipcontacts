@@ -127,9 +127,12 @@ class Person(models.Model):
         search=Search( person=self, string=s,  chips=list(chips))
         search.save()
         
-    def lod_changes(self, console=False):
+    @staticmethod
+    def lod_changes(id, console=False):
         """
             Return a list of dictionaries with all person changes
+            
+            Id is used due to person can be deleted, but id will remain in historic tables
         """
         def diff_dictionaries(old, new):   
             r=[]
@@ -161,28 +164,82 @@ class Person(models.Model):
                     d["type"]=new.history_type
                     r.append(d)
             return r
-        
+        #############################################        
         r={"diff": []}
         #Person
-        histories_person=self.history.all().order_by("history_date")
+        histories_person=Person.history.filter(id=id).order_by("history_date")
         r["person"]=list(histories_person.values())
         for i in range(len(r["person"])):
             r["diff"]+=diff_dictionaries(None if i==0 else histories_person[i-1], histories_person[i])
             
+        #Alias
+        histories_alias=Alias.history.filter(person__id=id).order_by("history_date")
+        r["alias"]=list(histories_alias.values())
+        for i in range(len(histories_alias)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_alias[i-1], histories_alias[i])
+            
+        #Group
+        histories_group=Group.history.filter(person__id=id).order_by("history_date")
+        r["group"]=list(histories_group.values())
+        for i in range(len(histories_group)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_group[i-1], histories_group[i])
+
+        #Address
+        histories_address=Address.history.filter(person__id=id).order_by("history_date")
+        r["address"]=list(histories_address.values())
+        for i in range(len(histories_address)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_address[i-1], histories_address[i])
+                
+        #Mail
+        histories_mail=Mail.history.filter(person__id=id).order_by("history_date")
+        r["mail"]=list(histories_mail.values())
+        for i in range(len(histories_mail)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_mail[i-1], histories_mail[i])
+            
+        #Phone
+        histories_phone=Phone.history.filter(person__id=id).order_by("history_date")
+        r["phone"]=list(histories_phone.values())
+        for i in range(len(histories_phone)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_phone[i-1], histories_phone[i])
+            
+        #RelationShip
+        histories_relationship=RelationShip.history.filter(person__id=id).order_by("history_date")
+        r["relationship"]=list(histories_relationship.values())
+        for i in range(len(histories_relationship)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_relationship[i-1], histories_relationship[i])
+
         #Job
-        histories_job=Job.history.filter(person=self).order_by("history_date")
+        histories_job=Job.history.filter(person__id=id).order_by("history_date")
         r["job"]=list(histories_job.values())
-        for i in range(len(histories_job)-1):
-            r["diff"]+=diff_dictionaries(histories_job[i], histories_job[i+1])
-            
-        
-            
+        for i in range(len(histories_job)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_job[i-1], histories_job[i])
+                
+        #Log
+        histories_log=Log.history.filter(person__id=id).order_by("history_date")
+        r["log"]=list(histories_log.values())
+        for i in range(len(histories_log)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_log[i-1], histories_log[i])
+
         #Diff
         if console:
             print("PERSON")
             lod.lod_print(r["person"])
+            print("ALIAS")
+            lod.lod_print(r["alias"])
+            print("ADDRESS")
+            lod.lod_print(r["address"])
+            print("MAIL")
+            lod.lod_print(r["mail"])
+            print("PHONE")
+            lod.lod_print(r["phone"])
+            print("RELATIONSHIP")
+            lod.lod_print(r["relationship"])
+            print("GROUP")
+            lod.lod_print(r["group"])
             print("JOB")
             lod.lod_print(r["job"])
+            print("LOG")
+            lod.lod_print(r["log"])
             print("DIFF")
             lod.lod_print(r["diff"])
         return r
