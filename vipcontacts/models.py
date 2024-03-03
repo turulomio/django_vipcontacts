@@ -140,9 +140,8 @@ class Person(models.Model):
                     d={}
                     d["datetime"]=new.history_date
                     d["model"]=new.__class__.__name__
-                    d["old_entity"]=None
+                    d["id"]=new.id
                     d["field"]=field.name
-                    d["pk"]=new.pk
                     d["old"]=None
                     d["new"]=getattr(new, field.name)
                     d["user"]=new.history_user
@@ -154,29 +153,38 @@ class Person(models.Model):
                     d={}
                     d["datetime"]=new.history_date
                     d["model"]=new.__class__.__name__
-                    d["old_entity"]=old 
+                    d["id"]=new.id
                     d["field"]=change.field
-                    d["pk"]=new.pk
                     d["old"]=change.old
                     d["new"]=change.new
                     d["user"]=new.history_user
                     d["type"]=new.history_type
                     r.append(d)
-            print(lod.lod_print(r))
             return r
         
-        r=[]
+        r={"diff": []}
         #Person
-        histories=list(self.history.all())
-        for i in range(len(histories)):
-            r+=diff_dictionaries(None if i==0 else histories[i-1], histories[i])
+        histories_person=self.history.all().order_by("history_date")
+        r["person"]=list(histories_person.values())
+        for i in range(len(r["person"])):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_person[i-1], histories_person[i])
             
         #Job
-        histories=list(Job.history.filter(person=self))
-        for i in range(len(histories)-1):
-            r+=diff_dictionaries(histories[i], histories[i+1])
+        histories_job=Job.history.filter(person=self).order_by("history_date")
+        r["job"]=list(histories_job.values())
+        for i in range(len(histories_job)-1):
+            r["diff"]+=diff_dictionaries(histories_job[i], histories_job[i+1])
+            
+        
+            
+        #Diff
         if console:
-            lod.lod_print(r)
+            print("PERSON")
+            lod.lod_print(r["person"])
+            print("JOB")
+            lod.lod_print(r["job"])
+            print("DIFF")
+            lod.lod_print(r["diff"])
         return r
             
         

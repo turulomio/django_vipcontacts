@@ -83,9 +83,6 @@ class CtTestCase(APITestCase):
         person.save()
         person.surname="Turu2"
         person.save()
-        print(person)
-        from vipcontacts import commons
-        commons.lod_model_history(person, console=True)
         person.lod_changes(console=True)
     
     
