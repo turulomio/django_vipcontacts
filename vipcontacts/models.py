@@ -131,33 +131,50 @@ class Person(models.Model):
         """
             Return a list of dictionaries with all person changes
         """
-        def diff_dictionary(old, new):   
-            print(dir(old))
-            d={}
-            delta=new.diff_against(old)
-            print(dir(delta))
-            for change in delta.changes:
-                d["datetime"]=new.history_date
-                d["model"]=new.__class__.__name__
-                d["old_entity"]=old
-                d["field"]=change.field
-                d["pk"]=new.pk
-                d["old"]=change.old
-                d["new"]=change.new
-                d["user"]=new.history_user
-                d["type"]=new.history_type
-            return d
+        def diff_dictionaries(old, new):   
+            r=[]
+            if old is None:
+                for field in new._meta.fields:
+                    if field.name in ["history_id", "history_date", "history_change_reason", "history_type", "history_user"]:
+                        continue
+                    d={}
+                    d["datetime"]=new.history_date
+                    d["model"]=new.__class__.__name__
+                    d["old_entity"]=None
+                    d["field"]=field.name
+                    d["pk"]=new.pk
+                    d["old"]=None
+                    d["new"]=getattr(new, field.name)
+                    d["user"]=new.history_user
+                    d["type"]="+"
+                    r.append(d)
+            else:
+                delta=new.diff_against(old)
+                for change in delta.changes:
+                    d={}
+                    d["datetime"]=new.history_date
+                    d["model"]=new.__class__.__name__
+                    d["old_entity"]=old 
+                    d["field"]=change.field
+                    d["pk"]=new.pk
+                    d["old"]=change.old
+                    d["new"]=change.new
+                    d["user"]=new.history_user
+                    d["type"]=new.history_type
+                    r.append(d)
+            print(lod.lod_print(r))
+            return r
         
         r=[]
         #Person
         histories=list(self.history.all())
-        for i in range(len(histories)-1):
-            r.append(diff_dictionary(histories[i], histories[i+1]))        
+        for i in range(len(histories)):
+            r+=diff_dictionaries(None if i==0 else histories[i-1], histories[i])
             
         #Job
         histories=list(Job.history.filter(person=self))
         for i in range(len(histories)-1):
-            r.append(diff_dictionary(histories[i], histories[i+1]))     
+            r+=diff_dictionaries(histories[i], histories[i+1])
         if console:
             lod.lod_print(r)
         return r

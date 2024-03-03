@@ -81,6 +81,11 @@ class CtTestCase(APITestCase):
     def test_person_changes(self):
         person=models.Person(name="Turulomio", gender=1)
         person.save()
+        person.surname="Turu2"
+        person.save()
+        print(person)
+        from vipcontacts import commons
+        commons.lod_model_history(person, console=True)
         person.lod_changes(console=True)
     
     

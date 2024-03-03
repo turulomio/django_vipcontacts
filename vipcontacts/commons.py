@@ -1,4 +1,7 @@
-def history_diff(old_history, new_history):
-    delta=new_history.diff_against(old_history)
-    for change in delta.changes:
-        print("{0} changed from {1} to {2}".format(change.field, change.old, change.new))
+from pydicts import lod
+        
+def lod_model_history(object, console=False):
+    lod_=object.history.order_by("history_date").values()
+    if console is True:
+        lod.lod_print(lod_)
+    return lod_
