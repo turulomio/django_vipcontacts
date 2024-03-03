@@ -1,8 +1,10 @@
 from datetime import date
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
 from pycountry import countries
+from pydicts import casts, lod
+from simple_history.models import HistoricalRecords
 
 #Create countries class
 LIST_COUNTRIES=[]
@@ -12,40 +14,6 @@ for  country in countries:
     
 def get_country_name(code):
     return countries.get(alpha_2=code).name
-
-def create_log(object,  fields, dt_update=None, person=None):
-    dt_update=object.dt_update if dt_update is None else dt_update
-    person=object.person if person is None else person
-    r=[]
-    for field in fields:
-        r.append((field,  getattr(object, field)))
-    s=f"{object.__class__.__name__}, {r}"
-    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueAdded, text=s)
-    l.save()    
-    
-    
-def delete_log(object,  fields, dt_update=None, person=None):
-    person=object.person if person is None else person
-    r=[]
-    for field in fields:
-        r.append((field,  getattr(object, field)))
-    s=f"{object.__class__.__name__}, {r}"
-    l=Log(datetime=timezone.now(), person=person, retypes=LogType.ContactValueDeleted, text=s)
-    l.save()    
-    
-def update_log( old, new_validated_data, fields, dt_update=None, person=None):
-    dt_update=new_validated_data['dt_update'] if dt_update is None else dt_update
-    person=new_validated_data['person'] if person is None else person
-    r=[]
-    for field in fields:
-        old_field= getattr(old, field)
-        new_field=new_validated_data[field]
-        if old_field!=new_field:
-            r.append((field,  old_field, new_field))
-    s=f"{old.__class__.__name__}, {old.id}, {r}"
-    l=Log(datetime=dt_update, person=person, retypes=LogType.ContactValueChanged, text=s)
-    l.save()
-
 
 class PersonGender(models.IntegerChoices):
     Man = 0, _('Man')
@@ -69,6 +37,7 @@ class Person(models.Model):
     death=models.DateField(blank=False, null=True)
     gender=models.IntegerField(choices=PersonGender.choices, blank=False,  null=False)
 
+    history= HistoricalRecords()
     class Meta:
         managed = True
         db_table = 'persons'
@@ -82,121 +51,200 @@ class Person(models.Model):
             "birth":birth, 
             "death":death, 
             "gender":gender, 
-          
         }
         
         
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.update_search_string()
+
     def fullName(self):
         return f"{str(self.name)} {str(self.surname)} {str(self.surname2)}"
         
     def __str__(self):
         return f"Person: {self.fullName()} ({str(self.birth)}) #{str(self.id)}"
-    def create_log( self, new):
-        create_log(new, ['name', 'surname', 'surname2', 'birth', 'death', 'gender'], person=self)
-
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', 'surname', 'surname2', 'birth', 'death', 'gender'], person=self)
 
     ## Generate a search string
-    def update_search_string( self, request=None):
+    def update_search_string( self):
         def add(s):
             if s==None:
                 return ""
             else:
-                return " " + s
+                return " " + str(s)
         ######
         if self.id is None:
-            print("You must save person before update_search_string")
-            return 
-        from vipcontacts.serializers import PersonSerializer
-        serializer = PersonSerializer(self, many=False,context={'request': request} )
-        x=serializer.data
-        
+            raise Exception("You must save person before update_search_string")
+
         ## SEARCH STRINGS
-        s=x["name"]
-        s=s+add(x["surname"])
-        s=s+add(x["surname2"])
-        s=s+add(x["birth"])
-        s=s+add(x["death"])
-        for o in x["mail"]:
-            s=s+add(o["mail"])
-        for o in x["phone"]:
-            s=s+add(o["phone"]) #+34 655 65 65 65
-            s=s+add(o["phone"].replace(" ", "")) #+346556565
-        for o in x["address"]:
-            s=s+add(o["address"])
-            s=s+add(o["city"])
-        for o in x["log"]:
-            if o["retypes"]==LogType.Personal:
-                s=s+add(o["text"])
-        for o in x["alias"]:
-            s=s+add(o["name"])
-        for o in x["job"]:
-            s=s+add(o["profession"])
-            s=s+add(o["organization"])
-            s=s+add(o["department"])
-            s=s+add(o["title"])
+        s=""
+        s=s + add(self.name)
+        s=s+add(self.surname)
+        s=s+add(self.surname2)
+        s=s+add(self.birth)
+        s=s+add(self.death)
+        for mail in self.mail.filter(dt_obsolete__isnull=True):
+            s=s+add(mail.mail)
+        for phone in self.phone.filter(dt_obsolete__isnull=True):
+            s=s+add(phone.phone) #+34 655 65 65 65
+            s=s+add(phone.phone.replace(" ", "")) #+346556565
+        for address in self.address.filter(dt_obsolete__isnull=True):
+            s=s+add(address.address)
+            s=s+add(address.address)
+        for log in self.log.filter(retypes__gte=100):
+            if log.retypes==LogType.Personal:
+                s=s+add(log.text)
+        for alias in self.alias.filter(dt_obsolete__isnull=True):
+            s=s+add(alias.name)
+        for job in self.job.filter(dt_obsolete__isnull=True):
+            s=s+add(job.profession)
+            s=s+add(job.organization)
+            s=s+add(job.department)
+            s=s+add(job.title)
 #        for o in x["relationship"]:
 #            destiny=person_from_person_url(o["destiny"])
 #            s=s+add(destiny.fullName())
             
         ## CHIPS
         chips=set()
-        for o in x['group']:
-            if o["dt_obsolete"] is None:
-                chips.add(o["name"])
+        for group in self.group.filter(dt_obsolete__isnull=True):
+                chips.add(group.name)
         
-        lengthjobs=len(x['job'])
-        if lengthjobs>0:
-            lastjob=x['job'][lengthjobs-1]
-            if len(lastjob["profession"])>0:
-                chips.add(lastjob["profession"])
-            if len(lastjob["organization"])>0:
-                chips.add(lastjob["organization"])
-            if len(lastjob["department"])>0:
-                chips.add(lastjob["department"])
-            if len(lastjob["title"])>0:
-                chips.add(lastjob["title"])
+        for job in self.job.filter(dt_obsolete__isnull=True):
+            if not casts.is_noe(job.profession):
+                chips.add(job.profession)
+            if not casts.is_noe(job.organization):
+                chips.add(job.organization)
+            if not casts.is_noe(job.department):
+                chips.add(job.department)
+            if not casts.is_noe(job.title):
+                chips.add(job.title)
+
 
         ## SAVE OBJECT
         Search.objects.filter(person=self).delete()
         search=Search( person=self, string=s,  chips=list(chips))
         search.save()
         
-    def contact_last_update(self):
-        r=self.dt_update
-        if self.dt_update>r:
-            r=self.dt_update
-        for o in self.address.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.alias.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.blob.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.group.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.job.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.log.all():
-            if o.datetime>r:
-                r=o.datetime
-        for o in self.mail.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.phone.all():
-            if o.dt_update>r:
-                r=o.dt_update
-        for o in self.relationship.all():
-            if o.dt_update>r:
-                r=o.dt_update
+    @staticmethod
+    def lod_changes(id, console=False):
+        """
+            Return a list of dictionaries with all person changes
+            
+            Id is used due to person can be deleted, but id will remain in historic tables
+        """
+        def diff_dictionaries(old, new):   
+            r=[]
+            if old is None:
+                for field in new._meta.fields:
+                    if field.name in ["history_id", "history_date", "history_change_reason", "history_type", "history_user"]:
+                        continue
+                    d={}
+                    d["datetime"]=new.history_date
+                    d["model"]=new.__class__.__name__
+                    d["id"]=new.id
+                    d["field"]=field.name
+                    d["old"]=None
+                    d["new"]=getattr(new, field.name)
+                    d["user"]=new.history_user
+                    d["type"]="+"
+                    r.append(d)
+            else:
+                delta=new.diff_against(old)
+                for change in delta.changes:
+                    d={}
+                    d["datetime"]=new.history_date
+                    d["model"]=new.__class__.__name__
+                    d["id"]=new.id
+                    d["field"]=change.field
+                    d["old"]=change.old
+                    d["new"]=change.new
+                    d["user"]=new.history_user
+                    d["type"]=new.history_type
+                    r.append(d)
+            return r
+        #############################################        
+        r={"diff": []}
+        #Person
+        histories_person=Person.history.filter(id=id).order_by("history_date")
+        r["person"]=list(histories_person.values())
+        for i in range(len(r["person"])):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_person[i-1], histories_person[i])
+            
+        #Alias
+        histories_alias=Alias.history.filter(person__id=id).order_by("history_date")
+        r["alias"]=list(histories_alias.values())
+        for i in range(len(histories_alias)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_alias[i-1], histories_alias[i])
+            
+        #Group
+        histories_group=Group.history.filter(person__id=id).order_by("history_date")
+        r["group"]=list(histories_group.values())
+        for i in range(len(histories_group)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_group[i-1], histories_group[i])
+
+        #Address
+        histories_address=Address.history.filter(person__id=id).order_by("history_date")
+        r["address"]=list(histories_address.values())
+        for i in range(len(histories_address)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_address[i-1], histories_address[i])
+                
+        #Mail
+        histories_mail=Mail.history.filter(person__id=id).order_by("history_date")
+        r["mail"]=list(histories_mail.values())
+        for i in range(len(histories_mail)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_mail[i-1], histories_mail[i])
+            
+        #Phone
+        histories_phone=Phone.history.filter(person__id=id).order_by("history_date")
+        r["phone"]=list(histories_phone.values())
+        for i in range(len(histories_phone)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_phone[i-1], histories_phone[i])
+            
+        #RelationShip
+        histories_relationship=RelationShip.history.filter(person__id=id).order_by("history_date")
+        r["relationship"]=list(histories_relationship.values())
+        for i in range(len(histories_relationship)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_relationship[i-1], histories_relationship[i])
+
+        #Job
+        histories_job=Job.history.filter(person__id=id).order_by("history_date")
+        r["job"]=list(histories_job.values())
+        for i in range(len(histories_job)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_job[i-1], histories_job[i])
+                
+        #Log
+        histories_log=Log.history.filter(person__id=id).order_by("history_date")
+        r["log"]=list(histories_log.values())
+        for i in range(len(histories_log)):
+            r["diff"]+=diff_dictionaries(None if i==0 else histories_log[i-1], histories_log[i])
+
+        #Diff
+        if console:
+            print("PERSON")
+            lod.lod_print(r["person"])
+            print("ALIAS")
+            lod.lod_print(r["alias"])
+            print("ADDRESS")
+            lod.lod_print(r["address"])
+            print("MAIL")
+            lod.lod_print(r["mail"])
+            print("PHONE")
+            lod.lod_print(r["phone"])
+            print("RELATIONSHIP")
+            lod.lod_print(r["relationship"])
+            print("GROUP")
+            lod.lod_print(r["group"])
+            print("JOB")
+            lod.lod_print(r["job"])
+            print("LOG")
+            lod.lod_print(r["log"])
+            print("DIFF")
+            lod.lod_print(r["diff"])
         return r
-
-
+            
+        
 class LogType(models.IntegerChoices):
     ContactValueChanged= 0, _('Contact data changed')
     ContactValueAdded = 1, _('Contact data added')
@@ -212,7 +260,7 @@ class Log(models.Model):
     retypes=models.IntegerField(choices=LogType.choices, blank=False,  null=False)
     text=models.TextField(blank=False, null=True)
     
-
+    history= HistoricalRecords()
     
     class Meta:
         managed = True
@@ -230,15 +278,31 @@ class Log(models.Model):
             "text":text, 
         }
         
+        
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.datetime
+        self.person.save() #Has implicit update_search string
+        
 class Alias(models.Model):
     person = models.ForeignKey('Person', related_name="alias",  on_delete=models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     name=models.CharField(max_length=100, blank=False, null=False)
+    
+    history= HistoricalRecords()
     class Meta:
         managed = True
         db_table = 'alias'
-
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.dt_update
+        self.person.save() #Has implicit update_search string
+        
     @staticmethod
     def post_payload(person, name="Alias for person"):
         return {
@@ -246,40 +310,31 @@ class Alias(models.Model):
             "name":name, 
         }
         
-
-    def create_log( self, new):
-        create_log(new, ['name', ])
-
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
-
-    def delete_log( self):
-        delete_log(self, ['dt_update', 'dt_obsolete', 'name', ])
-        
-        
     
 class Group(models.Model):
     person = models.ForeignKey('Person', related_name="group",  on_delete=models.CASCADE, blank=False, null=False)
     dt_update=models.DateTimeField(blank=False, null=False, default=timezone.now)
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     name=models.CharField(max_length=100, blank=False, null=False)
+    
+    history= HistoricalRecords()
     class Meta:
         managed = True
         db_table = 'groups'
         
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.dt_update
+        self.person.save() #Has implicit update_search string
+
     @staticmethod
     def post_payload(person, name="Group for person"):
         return {
             "person":  person,
             "name":name, 
         }
-    def create_log( self, new):
-        create_log(new, ['name', ])
-
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'name', ])
-    def delete_log( self):
-        delete_log(self, ['dt_update', 'dt_obsolete', 'name', ])
 
     def __str__(self):
         return f"Group: {self.name} #{self.id}"
@@ -325,18 +380,19 @@ class RelationShip(models.Model):
     person = models.ForeignKey('Person', related_name="relationship", on_delete=models.CASCADE, blank=False, null=False,)
     retypes=models.IntegerField(choices=RelationShipType.choices, blank=False,  null=False)
     destiny =  models.ForeignKey('Person', related_name="+", on_delete=models.DO_NOTHING, blank=False, null=False)
+    
+    history= HistoricalRecords()
     class Meta:
         managed = True
         db_table = 'relationship'
         
-    def create_log( self, new):
-        create_log(new, ['retypes', 'destiny' ])
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.dt_update
+        self.person.save() #Has implicit update_search string
 
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'destiny' ])
-
-    def delete_log( self):
-        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'destiny' ])
 
 class AddressType(models.IntegerChoices):
     Home = 0, _('Home')
@@ -352,22 +408,23 @@ class Address(models.Model):
     code=models.CharField(max_length=10, blank=True, null=True)
     city=models.CharField(max_length=100, blank=False, null=False)
     country=models.CharField(max_length=2, choices=LIST_COUNTRIES,  blank=False, null=False)    
+    
+    history= HistoricalRecords()
+    
     class Meta:
         managed = True
         db_table = 'addresses'
 
     def __str__(self):
         return f"Address: {self.address}, {self.code} {self.city}, {self.country} #{self.id}"
+        
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.dt_update
+        self.person.save() #Has implicit update_search string
 
-    def create_log( self, new):
-        create_log(new, ['retypes', 'address', 'code', 'city', 'country'])
-
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
-
-    def delete_log( self):
-        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'address', 'code', 'city', 'country'])
-            
     @staticmethod
     def post_payload(person, retypes=1, address="Home", code="28001",  city="Home town",  country="ES"):
         return {
@@ -389,9 +446,19 @@ class Job(models.Model):
     profession=models.CharField(max_length=300, blank=True, null=False)
     title=models.CharField(max_length=300, blank=True, null=False)
     department=models.CharField(max_length=300, blank=True, null=False)
+    
+    history= HistoricalRecords()
     class Meta:
         managed = True
         db_table = 'jobs'
+        
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.dt_update
+        self.person.save() #Has implicit update_search string
         
     @staticmethod
     def post_payload(person, organization="Person organization", profession="Person profession",  title="Person title",  department="Person department"):
@@ -402,19 +469,9 @@ class Job(models.Model):
             "title":title, 
             "department":department, 
         }
-        
-    def create_log( self, new):
-        create_log(new, ['organization', 'profession', 'title', 'department'])
-
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'organization', 'profession', 'title', 'department'])
-
+ 
     def __str__(self):
         return f"Job: {self.organization}"
-
-
-    def delete_log( self):
-        delete_log(self, ['dt_update', 'dt_obsolete', 'organization', 'profession', 'title', 'department'])
 
 class PhoneType(models.IntegerChoices):
     Home = 0, _('Home')     
@@ -432,21 +489,22 @@ class Phone(models.Model):
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     retypes=models.IntegerField(choices=PhoneType.choices, blank=False,  null=False)
     phone=models.CharField(max_length=50, blank=False, null=True) 
+    
+    history= HistoricalRecords()
     class Meta:
         managed = True
         db_table = 'phones'
 
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.dt_update
+        self.person.save() #Has implicit update_search string
+
     def __str__(self):
         return f"Phone: {self.phone} #{self.id}"
 
-    def create_log( self, new):
-        create_log(new, ['retypes', 'phone' ])
-
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'phone' ])
-        
-    def delete_log( self):
-        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'phone' ])
         
 class MailType(models.IntegerChoices):
     Personal = 0, _('Personal')
@@ -459,20 +517,24 @@ class Mail(models.Model):
     dt_obsolete=models.DateTimeField(blank=False, null=True)
     retypes=models.IntegerField(choices=MailType.choices, blank=False,  null=False)
     mail=models.CharField(max_length=100, blank=False, null=True) 
+    
+    history= HistoricalRecords()
     class Meta:
         managed = True
         db_table = 'mails'
 
-    def create_log( self, new):
-        create_log(new, ['retypes', 'mail' ])
 
-    def update_log( self, old, new_validated_data):
-        update_log(old, new_validated_data, ['dt_update', 'dt_obsolete', 'retypes', 'mail' ])
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.dt_update=timezone.now()
+        super().save(*args, **kwargs)
+        self.person.dt_update=self.dt_update
+        self.person.save() #Has implicit update_search string
+
     def __str__(self):
         return f"Mail: {self.mail} of type {self.retypes}"
 
-    def delete_log( self):
-        delete_log(self, ['dt_update', 'dt_obsolete', 'retypes', 'mail' ])
+
 
 class Search(models.Model):
     person = models.ForeignKey('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)
@@ -502,6 +564,13 @@ class Blob(models.Model):
         managed = True
         db_table = 'blobs'
         
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        self.person.dt_update=timezone.now()
+        self.person.save()
+        self.dt_update=self.person.dt_update
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Blob: {self.name}.{self.extension()}"
 

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken', 
     'corsheaders', 
     'vipcontacts', 
+    'simple_history', 
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 CORS_ORIGIN_WHITELIST = "https://127.0.0.1", "http://127.0.0.1:8003", 
