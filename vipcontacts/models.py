@@ -128,7 +128,7 @@ class Person(models.Model):
         search.save()
         
     @staticmethod
-    def lod_changes(id, console=False):
+    def historical_register(id, console=False):
         """
             Return a list of dictionaries with all person changes
             
@@ -146,8 +146,8 @@ class Person(models.Model):
                     d["id"]=new.id
                     d["field"]=field.name
                     d["old"]=None
-                    d["new"]=getattr(new, field.name)
-                    d["user"]=new.history_user
+                    d["new"]=str(getattr(new, field.name))
+                    d["user"]=str(new.history_user)
                     d["type"]="+"
                     r.append(d)
             else:
@@ -158,9 +158,9 @@ class Person(models.Model):
                     d["model"]=new.__class__.__name__
                     d["id"]=new.id
                     d["field"]=change.field
-                    d["old"]=change.old
-                    d["new"]=change.new
-                    d["user"]=new.history_user
+                    d["old"]=str(change.old)
+                    d["new"]=str(change.new)
+                    d["user"]=str(new.history_user)
                     d["type"]=new.history_type
                     r.append(d)
             return r

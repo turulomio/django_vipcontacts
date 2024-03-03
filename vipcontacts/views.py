@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ #With gettext it doesn't work onky with gettext_lazy. Reason?
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework import viewsets,  status, permissions
 from vipcontacts.reusing.connection_dj import cursor_one_column, cursor_rows, execute, show_queries
@@ -113,6 +113,12 @@ class PersonViewSet(viewsets.ModelViewSet):
                 self.queryset=self.queryset.filter(id__in=Subquery(qs_search.values("person__id")))
         serializer = PersonSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
+        
+    @action(detail=True, methods=["get"], name='Returns historical register', url_path="historical_register", url_name='historical_register', permission_classes=[permissions.IsAuthenticated])
+    def historical_report(self, request, pk=None):
+        person= self.get_object()
+        return Response(Person.historical_register(person.id))
+        
     
 class PhoneViewSet(viewsets.ModelViewSet):
     queryset = Phone.objects.all()
