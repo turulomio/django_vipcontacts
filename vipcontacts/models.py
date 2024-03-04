@@ -424,6 +424,15 @@ class Address(models.Model):
         super().save(*args, **kwargs)
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
+        
+    
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        print(dir(self.person.search))
+        print(self.person.search.string)
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
+        print(self.person.search.string)
 
     @staticmethod
     def post_payload(person, retypes=1, address="Home", code="28001",  city="Home town",  country="ES"):
@@ -537,7 +546,7 @@ class Mail(models.Model):
 
 
 class Search(models.Model):
-    person = models.ForeignKey('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)
+    person = models.OneToOneField('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)
     string = models.TextField(blank=True, null=False)
     chips=models.TextField(blank=True,  null=True)
     class Meta:
