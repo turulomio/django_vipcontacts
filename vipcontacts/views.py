@@ -49,7 +49,7 @@ class RelationShipViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.prefetch_related("mail").prefetch_related("phone").prefetch_related("search").prefetch_related("alias").prefetch_related("job").prefetch_related("group").prefetch_related("blob").prefetch_related("address").prefetch_related("relationship").prefetch_related("log").all()
+    queryset = Person.objects.prefetch_related("mail",  "phone", "search", "alias", "job", "group", "blob", "address", "relationship", "log").all()
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -101,17 +101,7 @@ class BlobViewSet(viewsets.ModelViewSet):
 class MailViewSet(viewsets.ModelViewSet):
     queryset = Mail.objects.all()
     serializer_class = MailSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-@api_view(['GET', ])
-@permission_classes([permissions.IsAuthenticated, ])
-def person_get_relationship_fullnames(request, person_id):
-    r=[]
-    qs_relationships=RelationShip.objects.all().filter(person_id=person_id).select_related("person")
-    for o in qs_relationships:
-        r.append({"id": o.destiny.id, "name":o.destiny.fullName()})
-    return JsonResponse(r, safe=False)
-    
+    permission_classes = [permissions.IsAuthenticated]   
 
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])

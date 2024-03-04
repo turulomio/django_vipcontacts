@@ -39,9 +39,13 @@ class LogSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url',  'id', 'datetime','retypes',  'text',   'person')
 
 class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
+    destiny_fullname = serializers.SerializerMethodField()
     class Meta:
         model = RelationShip
-        fields = ('id','url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny')
+        fields = ('id','url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny', 'destiny_fullname')
+        
+    def get_destiny_fullname(self, o):
+        return o.destiny.fullName()
     
 class SearchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
