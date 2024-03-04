@@ -39,9 +39,13 @@ class LogSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url',  'id', 'datetime','retypes',  'text',   'person')
 
 class RelationShipSerializer(serializers.HyperlinkedModelSerializer):
+    destiny_fullname = serializers.SerializerMethodField()
     class Meta:
         model = RelationShip
-        fields = ('id','url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny')
+        fields = ('id','url',  'dt_update',  'dt_obsolete',  'person','retypes', 'destiny', 'destiny_fullname')
+        
+    def get_destiny_fullname(self, o):
+        return o.destiny.fullName()
     
 class SearchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -73,7 +77,7 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
     address = AddressSerializer(many=True,  read_only=True)
     mail = MailSerializer(many=True,  read_only=True)
     phone = PhoneSerializer(many=True,  read_only=True)
-    search = SearchSerializer(many=True,  read_only=True)
+    search = SearchSerializer(many=False,  read_only=True)
     job = JobSerializer(many=True,  read_only=True)
     group = GroupSerializer(many=True,  read_only=True)
     blob=BlobSerializer(many=True, read_only=True)
@@ -88,7 +92,7 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
         return o.fullName()
         
 class PersonSerializerSearch(serializers.HyperlinkedModelSerializer):
-    search = SearchSerializer(many=True,  read_only=True)
+    search = SearchSerializer(many=False,  read_only=True)
     class Meta:
         model = Person
         fields = ('id','url', 'name', 'surname', 'surname2',  'birth', 'death',  'gender',  'search')

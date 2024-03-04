@@ -277,8 +277,12 @@ class Log(models.Model):
             "retypes":retypes, 
             "text":text, 
         }
-        
-        
+
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
+
     @transaction.atomic
     def save(self, *args, **kwargs):
         self.dt_update=timezone.now()
@@ -296,12 +300,18 @@ class Alias(models.Model):
     class Meta:
         managed = True
         db_table = 'alias'
+
     @transaction.atomic
     def save(self, *args, **kwargs):
         self.dt_update=timezone.now()
         super().save(*args, **kwargs)
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
+        
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
         
     @staticmethod
     def post_payload(person, name="Alias for person"):
@@ -328,6 +338,11 @@ class Group(models.Model):
         super().save(*args, **kwargs)
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
+
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
 
     @staticmethod
     def post_payload(person, name="Group for person"):
@@ -382,6 +397,7 @@ class RelationShip(models.Model):
     destiny =  models.ForeignKey('Person', related_name="+", on_delete=models.DO_NOTHING, blank=False, null=False)
     
     history= HistoricalRecords()
+
     class Meta:
         managed = True
         db_table = 'relationship'
@@ -393,6 +409,19 @@ class RelationShip(models.Model):
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
 
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
+
+
+    @staticmethod
+    def post_payload(person, destiny,  retypes=2):
+        return {
+            "person":  person,
+            "retypes":retypes, 
+            "destiny":destiny, 
+        }
 
 class AddressType(models.IntegerChoices):
     Home = 0, _('Home')
@@ -424,6 +453,11 @@ class Address(models.Model):
         super().save(*args, **kwargs)
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
+
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
 
     @staticmethod
     def post_payload(person, retypes=1, address="Home", code="28001",  city="Home town",  country="ES"):
@@ -459,7 +493,13 @@ class Job(models.Model):
         super().save(*args, **kwargs)
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
-        
+
+
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
+
     @staticmethod
     def post_payload(person, organization="Person organization", profession="Person profession",  title="Person title",  department="Person department"):
         return {
@@ -502,10 +542,14 @@ class Phone(models.Model):
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
 
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
+
     def __str__(self):
         return f"Phone: {self.phone} #{self.id}"
 
-        
 class MailType(models.IntegerChoices):
     Personal = 0, _('Personal')
     Work= 1, _('Work')
@@ -531,13 +575,18 @@ class Mail(models.Model):
         self.person.dt_update=self.dt_update
         self.person.save() #Has implicit update_search string
 
+    @transaction.atomic
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.person.update_search_string()
+
     def __str__(self):
         return f"Mail: {self.mail} of type {self.retypes}"
 
 
 
 class Search(models.Model):
-    person = models.ForeignKey('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)
+    person = models.OneToOneField('Person', related_name="search",  on_delete= models.CASCADE, blank=False, null=False)
     string = models.TextField(blank=True, null=False)
     chips=models.TextField(blank=True,  null=True)
     class Meta:

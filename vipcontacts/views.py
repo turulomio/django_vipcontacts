@@ -23,78 +23,39 @@ class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
     permission_classes = [permissions.IsAuthenticated]  
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 class AliasViewSet(viewsets.ModelViewSet):
     queryset = Alias.objects.all()
     serializer_class = AliasSerializer
     permission_classes = [permissions.IsAuthenticated] 
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated] 
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
     
 class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
     permission_classes = [permissions.IsAuthenticated] 
     
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
 class LogViewSet(viewsets.ModelViewSet):
     queryset = Log.objects.all()
     serializer_class = LogSerializer
-    permission_classes = [permissions.IsAuthenticated] 
-    
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-        
+    permission_classes = [permissions.IsAuthenticated]
+
 class RelationShipViewSet(viewsets.ModelViewSet):
     queryset = RelationShip.objects.all()
     serializer_class = RelationShipSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
     
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.prefetch_related("mail").prefetch_related("phone").prefetch_related("search").prefetch_related("alias").prefetch_related("job").prefetch_related("group").prefetch_related("blob").prefetch_related("address").prefetch_related("relationship").prefetch_related("log").all()
+    queryset = Person.objects.prefetch_related("mail",  "phone", "search", "alias", "job", "group", "blob", "address", "relationship", "log").all()
     serializer_class = PersonSerializer
     permission_classes = [permissions.IsAuthenticated]
     
-    ## ?search=                 To search a string
-    
     def list(self, request):
         """
+            ?search=                 To search a string  
             :LAST 40        Shows last edited records
         """
         search=RequestString(self.request,"search")
@@ -127,16 +88,11 @@ class PhoneViewSet(viewsets.ModelViewSet):
     serializer_class = PhoneSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 class SearchViewSet(viewsets.ModelViewSet):
     queryset = Search.objects.all()
     serializer_class = SearchSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
 class BlobViewSet(viewsets.ModelViewSet):
     queryset = Blob.objects.all()
     serializer_class = BlobSerializer
@@ -145,24 +101,7 @@ class BlobViewSet(viewsets.ModelViewSet):
 class MailViewSet(viewsets.ModelViewSet):
     queryset = Mail.objects.all()
     serializer_class = MailSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        instance.person.update_search_string()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@api_view(['GET', ])
-@permission_classes([permissions.IsAuthenticated, ])
-def person_get_relationship_fullnames(request, person_id):
-    r=[]
-    qs_relationships=RelationShip.objects.all().filter(person_id=person_id).select_related("person")
-    for o in qs_relationships:
-        r.append({"id": o.destiny.id, "name":o.destiny.fullName()})
-    return JsonResponse(r, safe=False)
-    
+    permission_classes = [permissions.IsAuthenticated]   
 
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
@@ -261,9 +200,6 @@ def groups(request):
     for o in qs:
         r.append({"name": o["name"]})
     return JsonResponse(r, safe=False)
-    
-    
-
 
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
@@ -310,11 +246,7 @@ def statistics(request):
     for row in cursor_rows("select count(*) as value, city as name from addresses group by city"):
         if not ( row["name"] is None or row["name"]==""):
             r["cities"].append(row)
-
-
     return JsonResponse(r, safe=False)
-    
-
 
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
@@ -336,7 +268,6 @@ def group_members_full(request):
     
     
 ## Needs url and name get parameters
-
 @api_view(['DELETE', ])
 @permission_classes([permissions.IsAuthenticated, ])
 def delete_group_by_name(request):
@@ -351,9 +282,6 @@ def delete_group_by_name(request):
     qs_groups.delete()
     person.update_search_string()
     return Response(f"Deleted: {number}")
-
-
-    
 
 @api_view(['GET', ])
 @permission_classes([permissions.IsAuthenticated, ])
