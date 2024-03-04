@@ -117,4 +117,4 @@ class CtTestCase(APITestCase):
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/relationship/", models.RelationShip.post_payload(person=dict_person["url"], destiny=dict_person2["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
         tests_helpers.client_post(self, self.client_authorized_1, "/api/relationship/", models.RelationShip.post_payload(person=dict_person["url"], destiny=dict_person2["url"]), status.HTTP_201_CREATED) 
         dict_person=tests_helpers.client_get(self, self.client_authorized_1,  dict_person["url"], status.HTTP_200_OK)
-        print(dict_person)
+        self.assertEqual(len(dict_person["relationship"]), 1)
