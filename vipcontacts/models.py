@@ -397,6 +397,7 @@ class RelationShip(models.Model):
     destiny =  models.ForeignKey('Person', related_name="+", on_delete=models.DO_NOTHING, blank=False, null=False)
     
     history= HistoricalRecords()
+
     class Meta:
         managed = True
         db_table = 'relationship'
@@ -412,6 +413,15 @@ class RelationShip(models.Model):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
         self.person.update_search_string()
+
+
+    @staticmethod
+    def post_payload(person, destiny,  retypes=2):
+        return {
+            "person":  person,
+            "retypes":retypes, 
+            "destiny":destiny, 
+        }
 
 class AddressType(models.IntegerChoices):
     Home = 0, _('Home')

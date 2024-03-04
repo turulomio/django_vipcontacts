@@ -66,8 +66,6 @@ class CtTestCase(APITestCase):
         #Action historical_report
         tests_helpers.client_get(self, self.client_authorized_1,  f"{dict_person_last_editions[0]['url']}", status.HTTP_200_OK)
 
-
-
     def test_address(self):
         dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/address/", models.Address.post_payload(person=dict_person["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
@@ -108,10 +106,15 @@ class CtTestCase(APITestCase):
         dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/job/", models.Job.post_payload(person=dict_person["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
 
-            
-
     def test_log(self):
         dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
         dict_log=tests_helpers.client_post(self, self.client_authorized_1, "/api/log/", models.Log.post_payload(person=dict_person["url"]), status.HTTP_201_CREATED) #Removes one share
         tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/log/", models.Log.post_payload(person=dict_person["url"]), dict_log["id"], post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
 
+    def test_relationship(self):
+        dict_person=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(), status.HTTP_201_CREATED) #Removes one share
+        dict_person2=tests_helpers.client_post(self, self.client_authorized_1, "/api/person/", models.Person.post_payload(name="Turulomio2"), status.HTTP_201_CREATED) #Removes one share
+        tests_helpers.common_actions_tests(self,  self.client_authorized_1, "/api/relationship/", models.RelationShip.post_payload(person=dict_person["url"], destiny=dict_person2["url"]), 1, post=status.HTTP_201_CREATED, delete=status.HTTP_204_NO_CONTENT)
+        tests_helpers.client_post(self, self.client_authorized_1, "/api/relationship/", models.RelationShip.post_payload(person=dict_person["url"], destiny=dict_person2["url"]), status.HTTP_201_CREATED) 
+        dict_person=tests_helpers.client_get(self, self.client_authorized_1,  dict_person["url"], status.HTTP_200_OK)
+        print(dict_person)
